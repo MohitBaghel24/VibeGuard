@@ -1,7 +1,10 @@
 {
-  "name": "vibeguard",
+  "name": "@mohit008baghel/vibeguard",
   "version": "0.1.0",
   "main": "./dist/index.js",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "tsup --watch",
     "build": "tsup",
