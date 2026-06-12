@@ -6,21 +6,19 @@ It is designed to scan, validate, and secure AI-generated code (from Claude, Cop
 
 ## 🚀 Getting Started
 
-The main CLI tool is located in the `vibeguard-cli` directory.
-
-To use VibeGuard:
+To instantly scan your project using the official NPM package:
 
 ```bash
-cd vibeguard-cli
-npm install
-npm run build
-npm link
+npx vibeguard-scan scan .
 ```
 
-Then you can scan any project using:
+You can also install it globally:
 ```bash
-vibeguard scan /path/to/your/project
+npm install -g vibeguard-scan
+vibeguard-scan scan /path/to/your/project
 ```
+
+For development and local building, check out the `vibeguard-cli` directory.
 
 ## 📚 Documentation
 - [Product Requirements (PRD)](VIBEGUARD_PRD.md)
