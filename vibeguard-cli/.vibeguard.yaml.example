@@ -1,0 +1,27 @@
+minSeverity: low
+scoreThreshold: 50
+ignore:
+  - "**/node_modules/**"
+  - "**/.git/**"
+  - "**/dist/**"
+  - "**/build/**"
+  - "**/*.min.js"
+  - "**/coverage/**"
+extensions:
+  - ".js"
+  - ".ts"
+  - ".jsx"
+  - ".tsx"
+  - ".py"
+  - ".json"
+  - ".yaml"
+  - ".yml"
+  - ".env"
+maxFileSize: 1048576
+detectors:
+  secrets: true
+  sql: true
+  auth: true
+  files: true
+outputFormat: text
+showBadge: true
