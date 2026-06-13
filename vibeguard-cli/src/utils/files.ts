@@ -75,7 +75,14 @@ export async function discoverFiles(rootPath: string, config: VibeGuardConfig): 
     // Ignore if .gitignore does not exist
   }
 
-  const ignorePatterns = [...config.ignore, ...gitignorePatterns];
+  const globalIgnores = [
+    '**/node_modules/**', '**/.git/**', '**/dist/**',
+    '**/build/**', '**/.next/**', '**/*.min.js',
+    '**/coverage/**', '**/tests/**', '**/test/**',
+    '**/*.test.*', '**/*.spec.*', '**/fixtures/**', '**/mocks/**'
+  ];
+
+  const ignorePatterns = [...new Set([...globalIgnores, ...config.ignore, ...gitignorePatterns])];
   const searchPatterns = config.extensions.map(ext => `**/*${ext}`);
   if (config.extensions.includes('.env')) {
     searchPatterns.push('**/*.env.*');
