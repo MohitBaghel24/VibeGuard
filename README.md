@@ -139,6 +139,33 @@ jobs:
 
 ---
 
+## 🤖 AI Agent Integration (MCP Server)
+
+VibeGuard comes with a built-in **Model Context Protocol (MCP)** server. This allows AI code assistants like Cursor, Claude Desktop, and Antigravity to autonomously scan the code they write in the background, and fix their own security vulnerabilities *before* you even see them!
+
+### Connecting to Cursor or Antigravity
+1. Open your editor's **Settings** and navigate to the **MCP Servers** tab.
+2. Click **Add New MCP Server**.
+3. Name: `VibeGuard`
+4. Type: `command`
+5. Command: `npx -y vibeguard-scan mcp`
+6. Click Save! Now just ask your AI: *"Use VibeGuard to scan this file for vulnerabilities."*
+
+### Connecting to Claude Desktop
+Add this to your `claude_desktop_config.json` (then completely restart Claude):
+```json
+{
+  "mcpServers": {
+    "vibeguard": {
+      "command": "npx",
+      "args": ["-y", "vibeguard-scan", "mcp"]
+    }
+  }
+}
+```
+
+---
+
 ## 📊 Your "Vibe Code Safety Score"
 
 After scanning, you get a simple **0-100 safety score**:
