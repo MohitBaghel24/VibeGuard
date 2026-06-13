@@ -113,7 +113,3 @@ addHookCommands(program);
 export const runCLI = () => {
   program.parse(process.argv);
 };
-
-if (process.env.NODE_ENV !== 'test' && !process.env.VITEST) {
-  runCLI();
-}

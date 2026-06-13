@@ -46,7 +46,7 @@
   },
   "type": "module",
   "bin": {
-    "vibeguard-scan": "./dist/index.js"
+    "vibeguard-scan": "./dist/cli.js"
   },
   "engines": {
     "node": ">=18.0.0"
