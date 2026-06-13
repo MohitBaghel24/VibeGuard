@@ -20,7 +20,9 @@ export const AllDetectors: Detector[] = [
 export function scanFile(filePath: string, content: string, detectors: Detector[]): Issue[] {
   const issues: Issue[] = [];
   for (const detector of detectors) {
-    const hasSupportedExt = detector.supportedExtensions.some(ext => filePath.endsWith(ext));
+    const hasSupportedExt = detector.supportedExtensions.some(ext => 
+      filePath.endsWith(ext) || (ext === '.env' && path.basename(filePath).startsWith('.env'))
+    );
     if (hasSupportedExt || detector.supportedExtensions.includes('.*')) {
        issues.push(...detector.detect(filePath, content));
     }

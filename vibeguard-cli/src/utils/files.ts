@@ -69,20 +69,24 @@ export async function discoverFiles(rootPath: string, config: VibeGuardConfig): 
     gitignorePatterns = gitignoreContent
       .split('\n')
       .map(line => line.trim())
-      .filter(line => line && !line.startsWith('#'));
+      .filter(line => line && !line.startsWith('#'))
+      .filter(line => !line.includes('.env')); // NEVER ignore .env files for scanning
   } catch (error) {
     // Ignore if .gitignore does not exist
   }
 
   const ignorePatterns = [...config.ignore, ...gitignorePatterns];
   const searchPatterns = config.extensions.map(ext => `**/*${ext}`);
+  if (config.extensions.includes('.env')) {
+    searchPatterns.push('**/*.env.*');
+  }
 
   const paths = await globby(searchPatterns, {
     cwd: absoluteRoot,
     ignore: ignorePatterns,
     absolute: true,
     dot: true,
-    gitignore: true, // globby also supports native gitignore parsing
+    gitignore: false, // We manually parse gitignore above so we can override .env rules
   });
 
   const validPaths: string[] = [];
