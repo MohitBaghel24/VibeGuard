@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { formatTextReport, formatJSONReport, formatBadge, printProgress } from '../../src/utils/output.js';
 import { ScanResult, Severity } from '../../src/types/index.js';
 
@@ -69,7 +69,11 @@ describe('Output Formatter', () => {
   });
 
   it('printProgress does not throw', () => {
+    const stdoutSpy = vi.spyOn(process.stdout, 'write').mockImplementation(() => true);
+    
     // Just ensure it runs without blowing up stdout
     expect(() => printProgress(5, 10, 'test.js')).not.toThrow();
+    
+    stdoutSpy.mockRestore();
   });
 });
