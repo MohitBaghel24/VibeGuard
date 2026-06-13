@@ -1,4 +1,5 @@
 import { Command } from 'commander';
+import { input } from '@inquirer/prompts';
 import { loadConfig, ConfigError } from '../utils/config.js';
 import { scan } from '../core/scanner.js';
 import { promises as fs } from 'fs';
@@ -44,16 +45,20 @@ export function addFixCommands(program: Command) {
           const sortedIssues = [...fileIssues].sort((a, b) => b.column - a.column);
           
           for (const issue of sortedIssues) {
-            console.log(`  - Fixing [${issue.title}] at line ${issue.line}`);
+            const target = issue.rawMatch || issue.match;
+            
             if (options.dryRun) {
-              const target = issue.rawMatch || issue.match;
+              console.log(`  - Previewing fix for [${issue.title}] at line ${issue.line}`);
               console.log(chalk.red(`    - ${target}`));
               console.log(chalk.green(`    + ${issue.replacement}`));
             } else {
-              // Quick and dirty replacement
-              // Ideally we use AST, but for simple secrets this works.
-              const target = issue.rawMatch || issue.match;
-              content = content.replace(target, issue.replacement!);
+              // Interactive prompt
+              const userReplacement = await input({
+                message: `⚠️ [${issue.title}] found at line ${issue.line}. What environment variable should replace this?`,
+                default: issue.replacement,
+              });
+              
+              content = content.replace(target, userReplacement);
             }
           }
           
