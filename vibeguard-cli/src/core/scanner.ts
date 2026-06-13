@@ -5,6 +5,8 @@ import { calculateScore, calculateCategoryScore, deduplicateIssues } from './sco
 import { SecretDetector, Detector } from './detectors/secrets.js';
 import { SQLInjectionDetector } from './detectors/sql.js';
 import { AuthChecker } from './detectors/auth.js';
+import { XSSDetector } from './detectors/xss.js';
+import { PathTraversalDetector } from './detectors/pathTraversal.js';
 import { AIHallucinationDetector } from './detectors/hallucinations.js';
 import path from 'path';
 
@@ -17,7 +19,9 @@ export const AllDetectors: Detector[] = [
   new SecretDetector(),
   new SQLInjectionDetector(),
   new AuthChecker(),
-  new AIHallucinationDetector()
+  new AIHallucinationDetector(),
+  new XSSDetector(),
+  new PathTraversalDetector()
 ];
 
 export function scanFile(filePath: string, content: string, detectors: Detector[]): Issue[] {
@@ -80,6 +84,18 @@ export async function scan(options: ScannerOptions): Promise<ScanResult> {
   }
 
   const dedupedIssues = deduplicateIssues(allIssues);
+  const finalIssues: Issue[] = [];
+  
+  for (const issue of dedupedIssues) {
+    if (issue.ruleId && config.rules && config.rules[issue.ruleId] !== undefined) {
+      const ruleOverride = config.rules[issue.ruleId];
+      if (ruleOverride === false) continue; // Rule is disabled
+      if (typeof ruleOverride === 'string') {
+        issue.severity = ruleOverride as Severity; // Override severity
+      }
+    }
+    finalIssues.push(issue);
+  }
   
   const issuesBySeverity: Record<Severity, Issue[]> = {
     [Severity.LOW]: [],
@@ -90,7 +106,7 @@ export async function scan(options: ScannerOptions): Promise<ScanResult> {
   
   const issuesByDetector: Record<string, Issue[]> = {};
   
-  for (const issue of dedupedIssues) {
+  for (const issue of finalIssues) {
     issuesBySeverity[issue.severity].push(issue);
     
     if (!issuesByDetector[issue.detectorId]) {
@@ -104,7 +120,7 @@ export async function scan(options: ScannerOptions): Promise<ScanResult> {
     categoryScores[detector.name] = calculateCategoryScore(detector.name, issuesByDetector[detector.id] || []);
   }
 
-  const { overallScore, rating } = calculateScore(dedupedIssues);
+  const { overallScore, rating } = calculateScore(finalIssues);
   
   const durationMs = Date.now() - startTime;
 
@@ -115,7 +131,7 @@ export async function scan(options: ScannerOptions): Promise<ScanResult> {
     filesSkipped,
     linesScanned: totalLinesScanned,
     durationMs,
-    issues: dedupedIssues,
+    issues: finalIssues,
     issuesBySeverity,
     issuesByDetector,
     categoryScores,

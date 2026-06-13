@@ -25,6 +25,7 @@ export const SCORE_RANGES: Record<ScoreRating, [number, number]> = {
 export interface Issue {
   id: string; // unique: `${detectorId}:${hash(filePath,line,column)}`
   detectorId: string;
+  ruleId?: string; // Stable identifier for customization
   title: string;
   description: string;
   severity: Severity;

@@ -42,6 +42,18 @@ function isFalsePositive(match: string, line: string, filePath: string): boolean
     return true;
   }
 
+  // Context-aware filtering: ignore object property access e.g., `req.headers.token`, `process.env.SECRET`
+  // This helps eliminate the false positive on `const token = req.headers...`
+  const objectPropertyRegex = /(?:req|request|res|response|process|env|config|headers|body|query|params|context|ctx)\.[a-zA-Z0-9_.]*(?:token|key|secret|password|auth|credential)/i;
+  if (objectPropertyRegex.test(trimmedLine)) {
+    // If it's a direct assignment from an object property, it's likely safe.
+    // e.g. const token = req.headers.authorization
+    // Ensure we only skip if the match isn't a hardcoded string literal assignment!
+    if (!/["'][A-Za-z0-9+/=]{20,}["']/.test(trimmedLine)) {
+      return true;
+    }
+  }
+
   for (const fp of COMMON_FALSE_POSITIVES) {
     if (fp.test(match) || fp.test(line)) {
       return true;
@@ -70,7 +82,7 @@ export const PATTERNS: SecretPattern[] = [
 export class SecretDetector implements Detector {
   readonly id = 'secrets';
   readonly name = 'Secret & Credential Detector';
-  readonly supportedExtensions = ['.js', '.ts', '.jsx', '.tsx', '.py', '.json', '.yaml', '.yml', '.env'];
+  readonly supportedExtensions = ['.js', '.ts', '.jsx', '.tsx', '.py', '.json', '.yaml', '.yml', '.env', '.php', '.java', '.cs', '.go', '.rs'];
 
   detect(filePath: string, content: string): Issue[] {
     const issues: Issue[] = [];
@@ -121,6 +133,7 @@ export class SecretDetector implements Detector {
           issues.push({
             id: `secrets:${hash(`${filePath}:${lineNumber}:${match.index}`)}`,
             detectorId: this.id,
+            ruleId: `${this.id}:${pattern.id}`,
             title: `${pattern.name} detected`,
             description: 'Hardcoded secrets found. Move to environment variable using .env file.',
             severity: pattern.severity,

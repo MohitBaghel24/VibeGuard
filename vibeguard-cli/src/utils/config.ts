@@ -28,6 +28,7 @@ const configSchema = z.object({
   detectors: z.record(z.string(), z.boolean()).default({
     secrets: true, sql: true, auth: true, files: true
   }),
+  rules: z.record(z.string(), z.union([z.boolean(), severitySchema])).default({}),
   outputFormat: z.enum(['text', 'json', 'sarif']).default('text'),
   showBadge: z.boolean().default(true),
 });
@@ -131,6 +132,7 @@ detectors:
   sql: true
   auth: true
   files: true
+rules: {}
 outputFormat: text
 showBadge: true`;
 

@@ -9,7 +9,7 @@ function hash(str: string): string {
 export class SQLInjectionDetector implements Detector {
   readonly id = 'sql';
   readonly name = 'SQL Injection Detector';
-  readonly supportedExtensions = ['.js', '.ts', '.jsx', '.tsx', '.py'];
+  readonly supportedExtensions = ['.js', '.ts', '.jsx', '.tsx', '.py', '.php', '.java', '.cs', '.go'];
 
   detect(filePath: string, content: string): Issue[] {
     const issues: Issue[] = [];
@@ -45,6 +45,24 @@ export class SQLInjectionDetector implements Detector {
         regex: /\.(?:execute|query)\s*\(\s*[a-zA-Z0-9_]+\s*\)/g,
         severity: Severity.HIGH,
         desc: 'Unparameterized database execution.'
+      },
+      {
+        id: 'php-sql-concat',
+        regex: /\$db->(?:query|exec)\s*\(\s*["'].*?["']\s*\.\s*\$_(?:GET|POST|REQUEST)/g,
+        severity: Severity.CRITICAL,
+        desc: 'SQL injection via PHP string concatenation with $_GET/POST.'
+      },
+      {
+        id: 'java-sql-concat',
+        regex: /\.executeQuery\s*\(\s*["'][^"']*["']\s*\+\s*[a-zA-Z0-9_]+/g,
+        severity: Severity.CRITICAL,
+        desc: 'SQL injection via Java string concatenation.'
+      },
+      {
+        id: 'go-sql-sprintf',
+        regex: /db\.(?:Query|QueryRow|Exec)\s*\(\s*fmt\.Sprintf/g,
+        severity: Severity.CRITICAL,
+        desc: 'SQL injection via Go fmt.Sprintf(). Use parameterized queries.'
       }
     ];
 
@@ -73,6 +91,7 @@ export class SQLInjectionDetector implements Detector {
         issues.push({
           id: `sql:${hash(`${filePath}:${lineNumber}:${match.index}`)}`,
           detectorId: this.id,
+          ruleId: `${this.id}:${pattern.id}`,
           title: `SQL Injection Detected: ${pattern.id}`,
           description: `${pattern.desc} Use parameterized queries instead.`,
           severity: pattern.severity,

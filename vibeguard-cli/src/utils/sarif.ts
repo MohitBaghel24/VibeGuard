@@ -22,18 +22,12 @@ export function toSarif(result: ScanResult): string {
   const ruleIds = new Set<string>();
 
   for (const issue of result.issues) {
-    if (!ruleIds.has(issue.detectorId)) {
-      ruleIds.add(issue.detectorId);
-      let shortDescription: string;
-      switch (issue.detectorId) {
-        case "secrets": shortDescription = "Hardcoded Secret"; break;
-        case "sql": shortDescription = "SQL Injection"; break;
-        case "auth": shortDescription = "Missing Authentication"; break;
-        default: shortDescription = "Security Issue"; break;
-      }
+    const sarifRuleId = issue.ruleId || issue.detectorId;
+    if (!ruleIds.has(sarifRuleId)) {
+      ruleIds.add(sarifRuleId);
       sarif.runs[0].tool.driver.rules.push({
-        id: issue.detectorId,
-        shortDescription: { text: shortDescription }
+        id: sarifRuleId,
+        shortDescription: { text: issue.title }
       });
     }
 
@@ -45,7 +39,7 @@ export function toSarif(result: ScanResult): string {
     }
 
     sarif.runs[0].results.push({
-      ruleId: issue.detectorId,
+      ruleId: issue.ruleId || issue.detectorId,
       level: level,
       message: {
         text: issue.description
