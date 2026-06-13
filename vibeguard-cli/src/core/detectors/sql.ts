@@ -18,7 +18,7 @@ export class SQLInjectionDetector implements Detector {
     const patterns = [
       {
         id: 'js-sql-template-literal',
-        regex: /`[\s\S]*?(?:SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|EXECUTE)\b[\s\S]*?\$\{[^}]+\}[\s\S]*?`/gi,
+        regex: /`[^`]*?(?:SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|EXECUTE)\b[^`]*?\$\{[^}]+\}[^`]*?`/gi,
         severity: Severity.CRITICAL,
         desc: 'SQL injection via template literal.'
       },
