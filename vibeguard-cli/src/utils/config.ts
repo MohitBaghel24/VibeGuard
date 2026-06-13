@@ -26,7 +26,7 @@ const configSchema = z.object({
   ]),
   maxFileSize: z.number().default(1048576), // 1MB
   detectors: z.record(z.string(), z.boolean()).default({
-    secrets: true, sql: true, auth: true, files: true
+    secrets: true, sql: true, auth: true, files: true, cmdInjection: true, ssrf: true
   }),
   rules: z.record(z.string(), z.union([z.boolean(), severitySchema])).default({}),
   outputFormat: z.enum(['text', 'json', 'sarif']).default('text'),
@@ -132,6 +132,8 @@ detectors:
   sql: true
   auth: true
   files: true
+  cmdInjection: true
+  ssrf: true
 rules: {}
 outputFormat: text
 showBadge: true`;

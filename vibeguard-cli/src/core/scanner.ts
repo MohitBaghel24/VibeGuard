@@ -8,6 +8,8 @@ import { AuthChecker } from './detectors/auth.js';
 import { XSSDetector } from './detectors/xss.js';
 import { PathTraversalDetector } from './detectors/pathTraversal.js';
 import { AIHallucinationDetector } from './detectors/hallucinations.js';
+import { CommandInjectionDetector } from './detectors/cmdInjection.js';
+import { SSRFDetector } from './detectors/ssrf.js';
 import path from 'path';
 
 export interface ScannerOptions {
@@ -21,7 +23,9 @@ export const AllDetectors: Detector[] = [
   new AuthChecker(),
   new AIHallucinationDetector(),
   new XSSDetector(),
-  new PathTraversalDetector()
+  new PathTraversalDetector(),
+  new CommandInjectionDetector(),
+  new SSRFDetector()
 ];
 
 export function scanFile(filePath: string, content: string, detectors: Detector[]): Issue[] {
