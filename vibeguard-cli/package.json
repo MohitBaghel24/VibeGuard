@@ -3,7 +3,8 @@
   "version": "0.1.2",
   "main": "./dist/index.js",
   "files": [
-    "dist"
+    "dist",
+    "action"
   ],
   "scripts": {
     "dev": "tsup --watch",
