@@ -111,3 +111,16 @@ program
 
 addHookCommands(program);
 addFixCommands(program);
+
+program
+  .command('mcp')
+  .description('Start the Model Context Protocol (MCP) server over stdio for AI integration')
+  .action(async () => {
+    try {
+      const { startMcpServer } = await import('../mcp/server.js');
+      await startMcpServer();
+    } catch (error: any) {
+      console.error(`💥 MCP Error: ${error.message}`);
+      process.exit(1);
+    }
+  });
