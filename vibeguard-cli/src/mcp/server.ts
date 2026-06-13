@@ -8,7 +8,7 @@ import { toSarif } from '../utils/sarif.js';
 
 export async function startMcpServer() {
   const server = new Server(
-    { name: "vibeguard-mcp", version: "0.1.2" },
+    { name: "vibeguard-mcp", version: "0.1.3" },
     { capabilities: { tools: {} } }
   );
 
