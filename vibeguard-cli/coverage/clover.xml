@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1781339664254" clover="3.2.0">
-  <project timestamp="1781339664255" name="All files">
-    <metrics statements="748" coveredstatements="607" conditionals="416" coveredconditionals="259" methods="93" coveredmethods="80" elements="1257" coveredelements="946" complexity="0" loc="748" ncloc="748" packages="7" files="22" classes="22"/>
+<coverage generated="1781351837912" clover="3.2.0">
+  <project timestamp="1781351837912" name="All files">
+    <metrics statements="754" coveredstatements="608" conditionals="416" coveredconditionals="259" methods="94" coveredmethods="80" elements="1264" coveredelements="947" complexity="0" loc="754" ncloc="754" packages="7" files="22" classes="22"/>
     <package name="cli">
-      <metrics statements="53" coveredstatements="22" conditionals="28" coveredconditionals="3" methods="3" coveredmethods="2"/>
+      <metrics statements="59" coveredstatements="23" conditionals="28" coveredconditionals="3" methods="4" coveredmethods="2"/>
       <file name="index.ts" path="/Users/mohitbaghel/Desktop/VibeGuard/vibeguard-cli/src/cli/index.ts">
-        <metrics statements="53" coveredstatements="22" conditionals="28" coveredconditionals="3" methods="3" coveredmethods="2"/>
+        <metrics statements="59" coveredstatements="23" conditionals="28" coveredconditionals="3" methods="4" coveredmethods="2"/>
         <line num="12" count="1" type="stmt"/>
         <line num="14" count="1" type="stmt"/>
         <line num="15" count="1" type="stmt"/>
@@ -59,6 +59,12 @@
         <line num="109" count="1" type="stmt"/>
         <line num="112" count="1" type="stmt"/>
         <line num="113" count="1" type="stmt"/>
+        <line num="115" count="1" type="stmt"/>
+        <line num="119" count="0" type="stmt"/>
+        <line num="120" count="0" type="stmt"/>
+        <line num="121" count="0" type="stmt"/>
+        <line num="123" count="0" type="stmt"/>
+        <line num="124" count="0" type="stmt"/>
       </file>
     </package>
     <package name="commands">
@@ -398,7 +404,7 @@
         <line num="25" count="2" type="stmt"/>
         <line num="26" count="2" type="stmt"/>
         <line num="27" count="1" type="stmt"/>
-        <line num="29" count="10" type="cond" truecount="1" falsecount="1"/>
+        <line num="29" count="11" type="cond" truecount="1" falsecount="1"/>
         <line num="30" count="10" type="cond" truecount="1" falsecount="1"/>
         <line num="31" count="1" type="cond" truecount="1" falsecount="1"/>
         <line num="36" count="2" type="stmt"/>

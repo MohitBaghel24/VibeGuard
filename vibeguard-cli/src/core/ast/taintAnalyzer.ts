@@ -79,9 +79,9 @@ export function analyzeFileForTaint(filePath: string, content: string): Issue[] 
       }
 
       if (functionName) {
-        let isSql = SQL_SINKS.includes(functionName);
-        let isCmd = CMD_SINKS.includes(functionName);
-        let isSsrf = SSRF_SINKS.includes(functionName);
+        const isSql = SQL_SINKS.includes(functionName);
+        const isCmd = CMD_SINKS.includes(functionName);
+        const isSsrf = SSRF_SINKS.includes(functionName);
 
         if (isSql || isCmd || isSsrf) {
           // Check if any argument is tainted
