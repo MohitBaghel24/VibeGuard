@@ -30,4 +30,37 @@ describe('Scanner', () => {
     const issues = scanFile('test.js', content, AllDetectors);
     expect(issues.length).toBeGreaterThan(0);
   });
+
+  describe('Inline Ignores', () => {
+    it('ignores all issues on the next line', () => {
+      const content = `
+// vibeguard-disable-next-line
+const awsAccessKey = "AKIAIOSFODNN7ABCDEFG";
+      `;
+      const issues = scanFile('test.js', content, AllDetectors);
+      expect(issues.length).toBe(0);
+    });
+
+    it('ignores specific rules on the next line', () => {
+      const content = `
+// vibeguard-disable-next-line secrets:aws-access-key
+const awsAccessKey = "AKIAIOSFODNN7ABCDEFG"; db.execute(userInput);
+      `;
+      const issues = scanFile('test.js', content, AllDetectors);
+      // The secret is ignored, but the SQL injection should still be caught!
+      expect(issues.length).toBeGreaterThan(0);
+      expect(issues.some(i => i.detectorId === 'secrets')).toBe(false);
+      expect(issues.some(i => i.detectorId === 'sql')).toBe(true);
+    });
+
+    it('does not ignore if rule string does not match', () => {
+      const content = `
+// vibeguard-disable-next-line sql:js-unparameterized-execute
+const awsAccessKey = "AKIAIOSFODNN7ABCDEFG";
+      `;
+      const issues = scanFile('test.js', content, AllDetectors);
+      expect(issues.length).toBeGreaterThan(0);
+      expect(issues[0].detectorId).toBe('secrets');
+    });
+  });
 });

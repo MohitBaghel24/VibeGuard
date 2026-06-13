@@ -39,15 +39,38 @@ export function scanFile(filePath: string, content: string, detectors: Detector[
     }
   }
   
-  // Restore original line content for better output formatting
+  // Restore original line content and process inline ignores
   const lines = content.split('\n');
+  const filteredIssues: Issue[] = [];
+  
   for (const issue of issues) {
     if (issue.line > 0 && issue.line <= lines.length) {
       issue.lineContent = lines[issue.line - 1];
     }
+    
+    // Check for inline ignore comments
+    if (issue.line > 1) {
+      const prevLine = lines[issue.line - 2];
+      if (prevLine && prevLine.includes('vibeguard-disable-next-line')) {
+        // Find if they specified a rule id, e.g. // vibeguard-disable-next-line secrets:aws-access-key
+        const match = prevLine.match(/vibeguard-disable-next-line\s+([\w:-]+)/);
+        if (match) {
+          const ignoredRule = match[1];
+          // If the ignore specifies a rule, only drop if it matches detectorId or ruleId
+          if (issue.detectorId === ignoredRule || issue.ruleId === ignoredRule) {
+            continue; // Drop issue
+          }
+        } else {
+          // No specific rule provided, drop all issues on the next line
+          continue;
+        }
+      }
+    }
+    
+    filteredIssues.push(issue);
   }
   
-  return issues;
+  return filteredIssues;
 }
 
 export async function scan(options: ScannerOptions): Promise<ScanResult> {
