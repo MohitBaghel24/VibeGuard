@@ -30,5 +30,5 @@ runs:
         if [ -n "${{ inputs.severity }}" ]; then
           ARGS="$ARGS -s ${{ inputs.severity }}"
         fi
-        npx vibeguard scan $ARGS
+        npx vibeguard-scan scan $ARGS
       shell: bash
