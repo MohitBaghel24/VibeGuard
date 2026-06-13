@@ -217,10 +217,10 @@ After scanning, you get a simple **0-100 safety score**:
 - [x] `.vibeguard.yaml` configuration
 - [x] Git pre-commit hook
 - [x] Badge generator
+- [x] MCP Server (Claude Code / Cursor integration)
 
 ### 🚀 Coming Soon
 - [ ] VS Code Extension (inline diagnostics + quick fixes)
-- [ ] MCP Server (Claude Code / Cursor integration)
 - [ ] `vibeguard dashboard` (local HTML security report)
 - [ ] SBOM generation (package vulnerability scanning)
 
