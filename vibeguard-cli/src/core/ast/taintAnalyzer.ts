@@ -42,10 +42,18 @@ export function analyzeFileForTaint(filePath: string, content: string): Issue[] 
   }
 
   function visit(node: ts.Node) {
-    // Variable Declarations (const id = req.query.id)
-    if (ts.isVariableDeclaration(node) && node.name && ts.isIdentifier(node.name) && node.initializer) {
+    // Variable Declarations (const id = req.query.id, or const { url } = req.body)
+    if (ts.isVariableDeclaration(node) && node.name && node.initializer) {
       if (isTaintedExpression(node.initializer)) {
-        taintedVariables.add(node.name.text);
+        if (ts.isIdentifier(node.name)) {
+          taintedVariables.add(node.name.text);
+        } else if (ts.isObjectBindingPattern(node.name)) {
+          node.name.elements.forEach(el => {
+            if (ts.isIdentifier(el.name)) {
+              taintedVariables.add(el.name.text);
+            }
+          });
+        }
       }
     }
     

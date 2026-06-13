@@ -18,7 +18,7 @@ export class XSSDetector implements Detector {
     const patterns = [
       {
         id: 'js-xss-innerhtml',
-        regex: /\.innerHTML\s*=\s*[^"']/g,
+        regex: /\.innerHTML\s*=\s*[^"'\s]/g,
         severity: Severity.HIGH,
         desc: 'Potential DOM-based XSS via innerHTML assignment. Use textContent instead.'
       },

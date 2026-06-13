@@ -17,7 +17,7 @@ export class SSRFDetector implements Detector {
     const patterns = [
       {
         id: 'js-ssrf',
-        regex: /(?:axios\.(?:get|post|put|delete)|fetch|http\.get|https\.get|request)\s*\(\s*[^'"`[{]/g,
+        regex: /\b(?:axios(?:\.(?:get|post|put|delete))?|fetch|http\.get|https\.get|request)\s*\(\s*[^'"`[{]/g,
         severity: Severity.CRITICAL,
         desc: 'Potential SSRF. Network request URL is dynamic. Ensure user input is validated against an allowlist.'
       },

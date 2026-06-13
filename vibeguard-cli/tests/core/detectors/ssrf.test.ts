@@ -46,4 +46,13 @@ describe('SSRFDetector', () => {
     expect(issues.length).toBe(1);
     expect(issues[0].ruleId).toBe('ssrf:php-ssrf');
   });
+
+  it('detects js axios() direct call with dynamic variable', () => {
+    const issues = detector.detect('test.js', `
+      const targetUrl = req.query.url;
+      axios(targetUrl);
+    `);
+    expect(issues.length).toBe(1);
+    expect(issues[0].ruleId).toBe('ssrf:js-ssrf');
+  });
 });

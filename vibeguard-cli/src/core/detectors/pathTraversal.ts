@@ -7,7 +7,7 @@ function hash(str: string): string {
 }
 
 export class PathTraversalDetector implements Detector {
-  readonly id = 'path-traversal';
+  readonly id = 'pathTraversal';
   readonly name = 'Path Traversal Detector';
   readonly supportedExtensions = ['.js', '.ts', '.py', '.php', '.java', '.cs', '.go', '.rs'];
 
@@ -57,7 +57,7 @@ export class PathTraversalDetector implements Detector {
         const lineContent = content.substring(lineStart, lineEnd);
         
         issues.push({
-          id: `path-traversal:${hash(`${filePath}:${lineNumber}:${match.index}`)}`,
+          id: `pathTraversal:${hash(`${filePath}:${lineNumber}:${match.index}`)}`,
           detectorId: this.id,
           ruleId: `${this.id}:${pattern.id}`,
           title: `Path Traversal Risk: ${pattern.id}`,

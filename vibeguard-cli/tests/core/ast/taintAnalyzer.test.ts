@@ -63,4 +63,16 @@ describe('AST Taint Analyzer', () => {
     const issues = analyzeFileForTaint('test.js', code);
     expect(issues.length).toBe(0);
   });
+
+  it('detects taint flow through object destructuring', () => {
+    const code = `
+      function proxy(req, res) {
+        const { url } = req.body;
+        fetch(url);
+      }
+    `;
+    const issues = analyzeFileForTaint('test.js', code);
+    expect(issues.length).toBe(1);
+    expect(issues[0].ruleId).toBe('ast:ssrf-taint');
+  });
 });
