@@ -1,76 +1,88 @@
 <div align="center">
   <img src="https://img.shields.io/badge/Security-100%25-brightgreen?style=for-the-badge" alt="Security 100%" />
-  <h1>🛡️ VibeGuard</h1>
-  <p><strong>The ultimate safety net for your AI-generated code.</strong></p>
+  <h1>🛡️ VibeGuard (Student Guide)</h1>
+  <p><strong>The ultimate safety net for your code.</strong></p>
 </div>
 
 ---
 
-## 🌟 What is VibeGuard?
+## 🌟 Welcome to VibeGuard!
 
-AI coding assistants (like ChatGPT, Claude, and GitHub Copilot) are incredible tools that help us build software faster. But sometimes, they make mistakes. They might accidentally generate code that contains **hardcoded passwords**, **database vulnerabilities**, or **unsecured administrative routes**.
+Are you a student or a beginner using AI tools like ChatGPT or GitHub Copilot to help you write code? That's awesome! But sometimes, AI can make mistakes. It might accidentally write code that leaves your passwords exposed or makes your database easy to hack.
 
-**VibeGuard** is your automated security guard. 
-
-It is a simple, ultra-fast tool that scans your project and catches these AI-generated mistakes *before* they ever reach your users. 
-
-Think of it like a spell-checker, but instead of checking for bad grammar, it checks for bad security!
+**VibeGuard** is like an automated spell-checker, but for security! It reads your code and catches these dangerous mistakes *before* anyone can exploit them.
 
 ---
 
-## 💡 Why do you need it?
+## 🚀 Step-by-Step Setup (For Beginners)
 
-If you are a founder, a non-technical manager, or a solo developer using AI to write code, it can be hard to know if the code is truly safe. 
+Since you have downloaded this project folder, follow these simple steps to get VibeGuard running on your computer.
 
-VibeGuard gives you peace of mind by acting as an automatic reviewer. It looks for:
-- 🔑 **Exposed Secrets:** (Did the AI leave an AWS key, Supabase key, or Stripe password in the code?)
-- 🗄️ **Database Risks:** (Did the AI write a SQL query that hackers could easily exploit?)
-- 🔓 **Missing Security Doors:** (Did the AI create an Admin panel but forget to add a login requirement?)
+### Step 1: Install Node.js
+If you don't have it already, download and install [Node.js](https://nodejs.org/). This lets your computer run JavaScript tools like VibeGuard.
 
-If it finds anything dangerous, it stops you and tells you exactly where the problem is.
-
----
-
-## 🚀 How to use it (It's super easy!)
-
-You don't need to be a security expert to use VibeGuard. If you have a terminal open in your project folder, just type one command:
+### Step 2: Open your Terminal
+Open your computer's "Terminal" (Mac/Linux) or "Command Prompt" (Windows), and navigate to the `vibeguard-cli` folder inside this project.
 
 ```bash
-npx vibeguard scan .
+cd vibeguard-cli
 ```
 
-That's it! VibeGuard will instantly scan your files and give your project a **Vibe Code Safety Score** from 0 to 100. 
-
-### Want to install it permanently?
-If you want to keep the tool installed on your computer, run:
+### Step 3: Install Dependencies
+Tell Node.js to download all the necessary parts for VibeGuard by typing:
 ```bash
-npm install -g vibeguard
+npm install
 ```
-vibeguard scan .
+
+### Step 4: Build the Tool
+Convert the code into an executable format by typing:
+```bash
+npm run build
 ```
 
 ---
 
-## 📊 Understanding the Report
+## 💻 How to Use VibeGuard
 
-When you run VibeGuard, it gives you a beautiful, easy-to-read report:
+Now that it's built, you can use VibeGuard to scan your projects! Make sure you are still in the `vibeguard-cli` folder when you run these commands.
 
-- **🟢 Excellent (100/100):** Your code looks clean! No obvious AI security mistakes found.
-- **🟡 Good (70-99/100):** A few minor issues, but nothing critical. 
-- **🔴 Poor / Critical (0-69/100):** VibeGuard found something dangerous (like an exposed password) and failed the scan to protect you. It will show you exactly which file and line to fix!
+### 1. Scan your project
+To scan the current folder for any security risks, type:
+```bash
+node ./dist/cli/index.js scan .
+```
+VibeGuard will give you a **Safety Score** from 0 to 100. If you get a 100, you are totally safe! If you get a lower score, it will tell you exactly which file has a problem.
+
+### 2. Automatically Fix Issues
+Did VibeGuard find a hardcoded password or secret? It can fix it for you!
+```bash
+node ./dist/cli/index.js fix .
+```
+
+### 3. Dry Run (Practice Fix)
+If you want to see what VibeGuard *will* fix without actually changing your files, use a dry run:
+```bash
+node ./dist/cli/index.js fix . --dry-run
+```
 
 ---
 
-## 📚 For Developers
+## 📊 What Does VibeGuard Actually Look For?
 
-If you want to dive deeper into how VibeGuard works under the hood, or if you want to integrate it into your automated CI/CD pipelines (like GitHub Actions), check out our technical documentation:
+When VibeGuard scans your code, it acts like a security guard looking for 4 main things:
+1. 🔑 **Exposed Secrets:** (Did you leave an AWS key, Github token, or password directly in your code?)
+2. 🗄️ **Database Risks:** (Did you write a SQL query that hackers could manipulate?)
+3. 🔓 **Missing Security Doors:** (Did you create an Admin panel but forget to make the user log in first?)
+4. 🤖 **AI Hallucinations:** (Did the AI tell you to import a package that doesn't actually exist?)
 
+---
+
+## 📚 For Advanced Users
+If you want to dive deeper into how VibeGuard works under the hood, check out our technical documentation:
 - [Product Requirements (PRD)](VIBEGUARD_PRD.md)
 - [Technical Requirements (TRD)](VIBEGUARD_TRD.md)
 - [Application Flow Diagram](APP_FLOW.html)
-- [CLI Source Code & Advanced Usage](vibeguard-cli/README.md)
 
----
 <div align="center">
-  <em>Ship AI code fast — without shipping vulnerabilities.</em>
+  <em>Ship code fast — without shipping vulnerabilities.</em>
 </div>

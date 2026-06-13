@@ -1,134 +1,92 @@
-# 🛡️ VibeGuard
+<div align="center">
+  <img src="https://img.shields.io/badge/Security-100%25-brightgreen?style=for-the-badge" alt="Security 100%" />
+  <h1>🛡️ VibeGuard CLI</h1>
+  <p><strong>The ultimate safety net for your code.</strong></p>
+</div>
 
-> The ultimate security scanner for AI-generated code.
+---
 
-[![VibeGuard Score](https://img.shields.io/badge/VibeGuard-100%2F100-brightgreen)](https://vibeguard.io)
+## 🌟 Welcome to VibeGuard!
 
-AI coding assistants are great, but they sometimes introduce subtle security vulnerabilities. VibeGuard is a fast, lightweight, and configurable CLI tool that acts as your final defense line, scanning your codebase for secrets, SQL injections, missing authentication, and more.
+Are you a student or a beginner using AI tools like ChatGPT or GitHub Copilot to help you write code? That's awesome! But sometimes, AI can make mistakes. It might accidentally write code that leaves your passwords exposed or makes your database easy to hack.
 
-## Features
+**VibeGuard** is like an automated spell-checker, but for security! It reads your code and catches these dangerous mistakes *before* anyone can exploit them.
 
-- **Fast & Lightweight:** Built in TypeScript, using regex and heuristics.
-- **AI-Focused Detectors:** specifically targets vulnerabilities often introduced by LLMs.
-- **Secrets Detection:** Finds AWS keys, GitHub tokens, passwords, and other hardcoded secrets.
-- **SQL Injection Detection:** Detects string concatenation and unparameterized queries.
-- **Auth Checking:** Highlights sensitive routes missing authentication middleware.
-- **Scoring System:** Gives your project a "Vibe Code Safety Score" from 0 to 100.
-- **CI/CD Ready:** Export reports in JSON or SARIF for seamless integration.
+---
 
-## Installation
+## 🚀 Step-by-Step Setup (For Beginners)
 
-You can run VibeGuard instantly using `npx`, or install it globally/locally.
+Since you have downloaded this project folder, follow these simple steps to get VibeGuard running on your computer.
 
+### Step 1: Install Node.js
+If you don't have it already, download and install [Node.js](https://nodejs.org/). This lets your computer run JavaScript tools like VibeGuard.
+
+### Step 2: Install Dependencies
+Open your Terminal, ensure you are inside this `vibeguard-cli` folder, and type:
 ```bash
-# Run without installing
-npx vibeguard scan .
-
-# Install globally
-npm install -g vibeguard
-
-# Install as a dev dependency
-npm install -D vibeguard
+npm install
 ```
 
-## Usage
-
-### Basic Scan
-
-Scan the current directory:
-
+### Step 3: Build the Tool
+Convert the code into an executable format by typing:
 ```bash
-vibeguard scan .
+npm run build
 ```
 
-Scan a specific directory and fail if the score drops below 80:
+---
 
+## 💻 How to Use VibeGuard
+
+Now that it's built, you can use VibeGuard to scan your projects!
+
+### 1. Scan your project
+To scan the current folder for any security risks, type:
 ```bash
-vibeguard scan src/ --fail-below 80
+node ./dist/cli/index.js scan .
 ```
+VibeGuard will give you a **Safety Score** from 0 to 100. If you get a 100, you are totally safe! If you get a lower score, it will tell you exactly which file has a problem.
 
-**Note on Scoring:** VibeGuard calculates a project "Vibe Score" between 0-100 using an exponential decay formula. A single critical issue significantly drops the score, but subsequent issues drop it less drastically. By default, `scoreThreshold` is 80. If your project scores below this threshold, the CLI will exit with an error code (useful for CI/CD pipelines).
-
-### Configuration
-
-Initialize a default configuration file in your project:
-
+### 2. Automatically Fix Issues
+Did VibeGuard find a hardcoded password or secret? It can fix it for you!
 ```bash
-vibeguard init
+node ./dist/cli/index.js fix .
 ```
 
-This creates a `.vibeguard.yaml` file where you can customize the scanner:
-
-```yaml
-minSeverity: low
-scoreThreshold: 50
-ignore:
-  - "**/node_modules/**"
-  - "**/.git/**"
-  - "**/dist/**"
-  - "**/build/**"
-  - "**/*.min.js"
-extensions:
-  - ".js"
-  - ".ts"
-  - ".jsx"
-  - ".tsx"
-  - ".py"
-  - ".json"
-  - ".yaml"
-  - ".yml"
-  - ".env"
-maxFileSize: 1048576
-detectors:
-  secrets: true
-  sql: true
-  auth: true
-  files: true
-outputFormat: text
-showBadge: true
-```
-
-### Git Hooks
-
-Prevent vulnerable code from being committed by installing the pre-commit hook:
-
+### 3. Dry Run (Practice Fix)
+If you want to see what VibeGuard *will* fix without actually changing your files, use a dry run:
 ```bash
-vibeguard hook install
+node ./dist/cli/index.js fix . --dry-run
 ```
 
-To remove the hook:
+---
 
+## ⚙️ Advanced Configuration
+
+You can customize VibeGuard by running the initialization command:
 ```bash
-vibeguard hook uninstall
+node ./dist/cli/index.js init
+```
+This creates a `.vibeguard.yaml` file where you can choose which detectors to run and customize your strictness!
+
+### Inline Ignores
+If VibeGuard flags a line of code that you know is safe (a false positive), you can easily tell it to ignore that line by placing a comment directly above it:
+```javascript
+// vibeguard-disable-next-line
+const mockKey = "AKIAIOSFODNN7ABCDEFG"; 
 ```
 
-## Integrating with GitHub Actions
+---
 
-VibeGuard includes a composite GitHub Action that you can easily drop into your workflows.
+## 📊 What Does VibeGuard Actually Look For?
 
-Create a `.github/workflows/vibeguard.yml` file:
+When VibeGuard scans your code, it acts like a security guard looking for critical OWASP vulnerabilities:
+1. 🔑 **Exposed Secrets**
+2. 🗄️ **Database Risks (SQL Injection)**
+3. 🔓 **Missing Authentication**
+4. 🤖 **AI Hallucinations**
+5. 🕷️ **Cross-Site Scripting (XSS)**
+6. 📂 **Path Traversal**
 
-```yaml
-name: VibeGuard Security Scan
-on: [push, pull_request]
-
-jobs:
-  scan:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      
-      # Use the VibeGuard Action
-      - name: VibeGuard Scan
-        uses: ./action
-        with:
-          path: '.'
-          fail-below: '70'
-```
-
-## License
-
-MIT License. See LICENSE for details.
+<div align="center">
+  <em>Ship code fast — without shipping vulnerabilities.</em>
+</div>
