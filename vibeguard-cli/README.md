@@ -1,92 +1,140 @@
 <div align="center">
   <img src="https://img.shields.io/badge/Security-100%25-brightgreen?style=for-the-badge" alt="Security 100%" />
+  <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License MIT" />
+  <img src="https://img.shields.io/badge/TypeScript-Ready-3178C6.svg" alt="TypeScript" />
   <h1>🛡️ VibeGuard CLI</h1>
-  <p><strong>The ultimate safety net for your code.</strong></p>
+  <p><strong>The ultimate security scanner for AI-generated code.</strong></p>
 </div>
 
 ---
 
-## 🌟 Welcome to VibeGuard!
+<p align="center">
+  <img src="../docs/assets/terminal_scan.png" alt="VibeGuard Terminal Scan Screenshot" width="800" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);" />
+</p>
 
-Are you a student or a beginner using AI tools like ChatGPT or GitHub Copilot to help you write code? That's awesome! But sometimes, AI can make mistakes. It might accidentally write code that leaves your passwords exposed or makes your database easy to hack.
+## 🌟 Overview
 
-**VibeGuard** is like an automated spell-checker, but for security! It reads your code and catches these dangerous mistakes *before* anyone can exploit them.
+AI coding assistants (like GitHub Copilot, ChatGPT, and Claude) drastically accelerate development but occasionally introduce critical security vulnerabilities—from hardcoded credentials to unparameterized SQL queries.
+
+**VibeGuard** acts as your final line of defense. It is an ultra-fast, extensible Static Application Security Testing (SAST) CLI designed specifically to catch the common mistakes made by Large Language Models before they ever reach production. 
 
 ---
 
-## 🚀 Step-by-Step Setup (For Beginners)
+## ⚡ Features
 
-Since you have downloaded this project folder, follow these simple steps to get VibeGuard running on your computer.
+- 🚀 **Blazing Fast:** Built in TypeScript with optimized regex heuristics.
+- 🔑 **Secrets Detection:** Scans for AWS keys, GitHub tokens, Supabase keys, and generic API keys.
+- 🗄️ **SQL Injection (SQLi):** Flags vulnerable string concatenation across multiple languages.
+- 🕷️ **Cross-Site Scripting (XSS):** Identifies unsafe DOM injections (`innerHTML`, `dangerouslySetInnerHTML`).
+- 📂 **Path Traversal:** Spots unsanitized filesystem reads.
+- 🤖 **AI Hallucinations:** Detects non-existent "hallucinated" NPM packages.
+- 🌐 **Multi-Language Support:** Scans JavaScript, TypeScript, Python, Go, Rust, Java, C#, and PHP.
+- 🛠️ **Automated Fixes:** Can instantly redact exposed secrets across your entire codebase.
 
-### Step 1: Install Node.js
-If you don't have it already, download and install [Node.js](https://nodejs.org/). This lets your computer run JavaScript tools like VibeGuard.
+---
 
-### Step 2: Install Dependencies
-Open your Terminal, ensure you are inside this `vibeguard-cli` folder, and type:
+## 🚀 Quick Start Guide
+
+### 1. Installation
+
+If you are cloning this repository locally for development or to run from source:
+
 ```bash
+git clone https://github.com/MohitBaghel24/VibeGuard.git
+cd VibeGuard/vibeguard-cli
 npm install
-```
-
-### Step 3: Build the Tool
-Convert the code into an executable format by typing:
-```bash
 npm run build
 ```
 
----
+### 2. Core Commands
 
-## 💻 How to Use VibeGuard
+VibeGuard is operated directly via the CLI. If you are running locally from source, replace `vibeguard` with `node ./dist/cli/index.js`.
 
-Now that it's built, you can use VibeGuard to scan your projects!
-
-### 1. Scan your project
-To scan the current folder for any security risks, type:
+**Scan a Directory:**
+Run a full security scan on the current directory:
 ```bash
 node ./dist/cli/index.js scan .
 ```
-VibeGuard will give you a **Safety Score** from 0 to 100. If you get a 100, you are totally safe! If you get a lower score, it will tell you exactly which file has a problem.
+*(Fails the CI pipeline if the score drops below the default threshold of 80).*
 
-### 2. Automatically Fix Issues
-Did VibeGuard find a hardcoded password or secret? It can fix it for you!
+**Auto-Fix Secrets:**
+Automatically redact exposed API keys and passwords replacing them securely with `process.env.SECRET_KEY`:
 ```bash
 node ./dist/cli/index.js fix .
 ```
 
-### 3. Dry Run (Practice Fix)
-If you want to see what VibeGuard *will* fix without actually changing your files, use a dry run:
+**Dry-Run Fixes:**
+Preview what secrets VibeGuard would redact without modifying your actual files:
 ```bash
 node ./dist/cli/index.js fix . --dry-run
+```
+
+**Initialize Configuration:**
+Create a `.vibeguard.yaml` configuration file in your project:
+```bash
+node ./dist/cli/index.js init
+```
+
+**Install Git Pre-commit Hook:**
+Prevent vulnerable code from ever being committed:
+```bash
+node ./dist/cli/index.js hook install
 ```
 
 ---
 
 ## ⚙️ Advanced Configuration
 
-You can customize VibeGuard by running the initialization command:
-```bash
-node ./dist/cli/index.js init
-```
-This creates a `.vibeguard.yaml` file where you can choose which detectors to run and customize your strictness!
+VibeGuard is highly customizable via the `.vibeguard.yaml` file generated by the `init` command. 
 
-### Inline Ignores
-If VibeGuard flags a line of code that you know is safe (a false positive), you can easily tell it to ignore that line by placing a comment directly above it:
+### Per-Rule Overrides
+You can disable specific rules or change their severity in your config file:
+```yaml
+rules:
+  "secrets:generic-api-key": "low"
+  "sql:php-sql-concat": false
+```
+
+### Inline Comments (False Positives)
+If VibeGuard flags a false positive, you can suppress it directly in your code without disabling the rule globally:
 ```javascript
-// vibeguard-disable-next-line
-const mockKey = "AKIAIOSFODNN7ABCDEFG"; 
+// vibeguard-disable-next-line secrets:aws-access-key
+const mockAwsKey = "AKIAIOSFODNN7ABCDEFG"; // Safe mock for tests
 ```
 
 ---
 
-## 📊 What Does VibeGuard Actually Look For?
+## 🔌 CI/CD Integration (GitHub Actions)
 
-When VibeGuard scans your code, it acts like a security guard looking for critical OWASP vulnerabilities:
-1. 🔑 **Exposed Secrets**
-2. 🗄️ **Database Risks (SQL Injection)**
-3. 🔓 **Missing Authentication**
-4. 🤖 **AI Hallucinations**
-5. 🕷️ **Cross-Site Scripting (XSS)**
-6. 📂 **Path Traversal**
+VibeGuard outputs GitHub-native SARIF format, seamlessly integrating into your **GitHub Code Scanning Alerts**.
 
+```yaml
+name: VibeGuard Security Scan
+on: [push, pull_request]
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      
+      # Run VibeGuard
+      - name: VibeGuard Scan
+        run: |
+          npm install -g vibeguard
+          vibeguard scan . --format sarif > results.sarif
+          
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: results.sarif
+```
+
+---
 <div align="center">
-  <em>Ship code fast — without shipping vulnerabilities.</em>
+  <em>Built with ❤️ to keep your AI-assisted code secure.</em><br/>
+  <strong>License: MIT</strong>
 </div>
