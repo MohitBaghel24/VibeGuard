@@ -6,6 +6,7 @@ import { Severity, ScoreRating, SCORE_RANGES } from '../types/index.js';
 import { SecurityError } from '../utils/files.js';
 import { createRequire } from 'module';
 import { addHookCommands } from '../commands/hook.js';
+import { addFixCommands } from '../commands/fix.js';
 import { toSarif } from '../utils/sarif.js';
 
 const require = createRequire(import.meta.url);
@@ -109,3 +110,4 @@ program
   });
 
 addHookCommands(program);
+addFixCommands(program);

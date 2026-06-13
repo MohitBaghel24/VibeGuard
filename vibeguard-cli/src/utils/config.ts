@@ -18,7 +18,8 @@ const configSchema = z.object({
   scoreThreshold: z.number().min(0).max(100).default(50),
   ignore: z.array(z.string()).default([
     '**/node_modules/**', '**/.git/**', '**/dist/**',
-    '**/build/**', '**/.next/**', '**/*.min.js'
+    '**/build/**', '**/.next/**', '**/*.min.js',
+    '**/tests/**', '**/test/**', '**/*.test.*', '**/*.spec.*'
   ]),
   extensions: z.array(z.string()).default([
     '.js', '.ts', '.jsx', '.tsx', '.py', '.json', '.yaml', '.yml', '.env'
@@ -110,6 +111,10 @@ ignore:
   - "**/build/**"
   - "**/*.min.js"
   - "**/coverage/**"
+  - "**/tests/**"
+  - "**/test/**"
+  - "**/*.test.*"
+  - "**/*.spec.*"
 extensions:
   - ".js"
   - ".ts"

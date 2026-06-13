@@ -35,7 +35,9 @@ export interface Issue {
   match: string; // the matched content, will be redacted for secrets
   lineContent: string; // full line
   confidence: number; // 0-1
+  rawMatch?: string; // unredacted match, used for automated fixing
   fix?: string; // optional suggested fix
+  replacement?: string; // string to auto-replace match with
   docsUrl?: string;
   cwe?: string;
 }

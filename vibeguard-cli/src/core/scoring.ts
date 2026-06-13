@@ -52,7 +52,7 @@ export function calculateCategoryScore(name: string, issues: Issue[]): CategoryS
   }
   
   const penalty = calculatePenalty(issues);
-  const score = Math.max(0, Math.round(100 - penalty));
+  const score = Math.round(100 * Math.exp(-penalty / 30));
   
   return {
     name,
@@ -64,7 +64,7 @@ export function calculateCategoryScore(name: string, issues: Issue[]): CategoryS
 
 export function calculateScore(issues: Issue[]): { overallScore: number; rating: ScoreRating } {
   const penalty = calculatePenalty(issues);
-  const overallScore = Math.max(0, Math.round(100 - penalty));
+  const overallScore = Math.round(100 * Math.exp(-penalty / 30));
   
   let rating: ScoreRating = 'critical';
   for (const [r, [min, max]] of Object.entries(SCORE_RANGES)) {

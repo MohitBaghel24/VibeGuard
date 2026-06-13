@@ -129,8 +129,10 @@ export class SecretDetector implements Detector {
             column: match.index + 1,
             length: matchText.length,
             match: redacted,
+            rawMatch: matchText,
             lineContent: line,
             confidence: Number(confidence.toFixed(2)),
+            replacement: 'process.env.SECRET_KEY',
             cwe: 'CWE-798'
           });
         }

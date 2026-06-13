@@ -19,8 +19,8 @@ describe('Scoring', () => {
       { severity: Severity.HIGH }
     ];
     const res = calculateScore(issues);
-    expect(res.overallScore).toBe(81); // 100 - (15 + 8 * 0.5)
-    expect(res.rating).toBe('good');
+    expect(res.overallScore).toBe(53); // 100 * Math.exp(-19 / 30)
+    expect(res.rating).toBe('needs-work');
   });
 });
 

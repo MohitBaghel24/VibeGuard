@@ -1,9 +1,11 @@
 import { VibeGuardConfig, ScanResult, Issue, Severity } from '../types/index.js';
 import { discoverFiles, readFileContent } from '../utils/files.js';
+import { stripFalsePositives } from '../utils/falsePositives.js';
 import { calculateScore, calculateCategoryScore, deduplicateIssues } from './scoring.js';
 import { SecretDetector, Detector } from './detectors/secrets.js';
 import { SQLInjectionDetector } from './detectors/sql.js';
 import { AuthChecker } from './detectors/auth.js';
+import { AIHallucinationDetector } from './detectors/hallucinations.js';
 import path from 'path';
 
 export interface ScannerOptions {
@@ -14,19 +16,33 @@ export interface ScannerOptions {
 export const AllDetectors: Detector[] = [
   new SecretDetector(),
   new SQLInjectionDetector(),
-  new AuthChecker()
+  new AuthChecker(),
+  new AIHallucinationDetector()
 ];
 
 export function scanFile(filePath: string, content: string, detectors: Detector[]): Issue[] {
   const issues: Issue[] = [];
+  const cleanContent = stripFalsePositives(content, filePath);
+  
   for (const detector of detectors) {
     const hasSupportedExt = detector.supportedExtensions.some(ext => 
       filePath.endsWith(ext) || (ext === '.env' && path.basename(filePath).startsWith('.env'))
     );
     if (hasSupportedExt || detector.supportedExtensions.includes('.*')) {
-       issues.push(...detector.detect(filePath, content));
+       // Pass cleanContent to avoid matching inside comments, but maybe detector needs original?
+       // Currently, passing cleanContent works because indices align exactly.
+       issues.push(...detector.detect(filePath, cleanContent));
     }
   }
+  
+  // Restore original line content for better output formatting
+  for (const issue of issues) {
+    const lines = content.split('\n');
+    if (issue.line > 0 && issue.line <= lines.length) {
+      issue.lineContent = lines[issue.line - 1];
+    }
+  }
+  
   return issues;
 }
 
@@ -41,6 +57,13 @@ export async function scan(options: ScannerOptions): Promise<ScanResult> {
   let totalLinesScanned = 0;
   let filesSkipped = 0;
   const allIssues: Issue[] = [];
+
+  // Initialize any detectors that need rootPath access
+  for (const detector of activeDetectors) {
+    if ('initialize' in detector && typeof detector.initialize === 'function') {
+      await detector.initialize(rootPath);
+    }
+  }
 
   for (const filePath of filePaths) {
     const absPath = path.resolve(rootPath, filePath);
