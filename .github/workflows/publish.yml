@@ -1,0 +1,38 @@
+name: Publish to npm
+
+on:
+  release:
+    types: [published]
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          registry-url: 'https://registry.npmjs.org'
+          
+      - name: Install dependencies
+        working-directory: ./vibeguard-cli
+        run: npm ci
+        
+      - name: Build CLI
+        working-directory: ./vibeguard-cli
+        run: npm run build
+        
+      - name: Run Tests
+        working-directory: ./vibeguard-cli
+        run: npm run test
+        
+      - name: Publish to npm
+        working-directory: ./vibeguard-cli
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

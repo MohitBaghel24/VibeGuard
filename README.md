@@ -36,7 +36,7 @@ If it finds anything dangerous, it stops you and tells you exactly where the pro
 You don't need to be a security expert to use VibeGuard. If you have a terminal open in your project folder, just type one command:
 
 ```bash
-npx vibeguard-scan scan .
+npx vibeguard scan .
 ```
 
 That's it! VibeGuard will instantly scan your files and give your project a **Vibe Code Safety Score** from 0 to 100. 
@@ -44,11 +44,9 @@ That's it! VibeGuard will instantly scan your files and give your project a **Vi
 ### Want to install it permanently?
 If you want to keep the tool installed on your computer, run:
 ```bash
-npm install -g vibeguard-scan
+npm install -g vibeguard
 ```
-Then, anytime you want to check your project, simply type:
-```bash
-vibeguard-scan scan .
+vibeguard scan .
 ```
 
 ---
