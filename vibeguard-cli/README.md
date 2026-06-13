@@ -47,6 +47,8 @@ Scan a specific directory and fail if the score drops below 80:
 vibeguard scan src/ --fail-below 80
 ```
 
+**Note on Scoring:** VibeGuard calculates a project "Vibe Score" between 0-100 using an exponential decay formula. A single critical issue significantly drops the score, but subsequent issues drop it less drastically. By default, `scoreThreshold` is 80. If your project scores below this threshold, the CLI will exit with an error code (useful for CI/CD pipelines).
+
 ### Configuration
 
 Initialize a default configuration file in your project:

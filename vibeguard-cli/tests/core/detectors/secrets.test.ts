@@ -39,4 +39,14 @@ describe('SecretDetector', () => {
     const issues = await runDetector('test-file.spec.js');
     expect(issues.length).toBe(0);
   });
+
+  it('ignores object property access contexts (false positive filtering)', () => {
+    const content = `
+      const token = req.headers.authorization;
+      const key = process.env.SECRET_KEY;
+      const secret = config.db.password;
+    `;
+    const issues = detector.detect('app.js', content);
+    expect(issues.length).toBe(0);
+  });
 });

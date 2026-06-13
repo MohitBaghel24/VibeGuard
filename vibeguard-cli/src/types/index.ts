@@ -73,6 +73,7 @@ export interface VibeGuardConfig {
   extensions: string[];
   maxFileSize: number; // bytes
   detectors: Record<string, boolean>;
+  rules?: Record<string, boolean | Severity | string>;
   outputFormat: 'text' | 'json' | 'sarif';
   showBadge: boolean;
 }

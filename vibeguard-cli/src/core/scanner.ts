@@ -40,8 +40,8 @@ export function scanFile(filePath: string, content: string, detectors: Detector[
   }
   
   // Restore original line content for better output formatting
+  const lines = content.split('\n');
   for (const issue of issues) {
-    const lines = content.split('\n');
     if (issue.line > 0 && issue.line <= lines.length) {
       issue.lineContent = lines[issue.line - 1];
     }
