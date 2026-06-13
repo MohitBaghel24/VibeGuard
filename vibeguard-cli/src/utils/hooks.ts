@@ -4,7 +4,7 @@ import path from 'path';
 export const HOOK_SCRIPT = `#!/bin/sh
 # VibeGuard pre-commit hook
 echo "🛡️ Running VibeGuard security scan..."
-npx vibeguard-scan scan --fail-below 80
+npx vibeguard scan --fail-below 80
 if [ $? -ne 0 ]; then
   echo "❌ VibeGuard scan failed. Please fix the security issues before committing."
   exit 1

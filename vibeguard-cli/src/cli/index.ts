@@ -109,7 +109,3 @@ program
   });
 
 addHookCommands(program);
-
-export const runCLI = () => {
-  program.parse(process.argv);
-};

@@ -1,3 +1,3 @@
-import { runCLI } from './index.js';
+import { program } from './index.js';
 
-runCLI();
+program.parse(process.argv);

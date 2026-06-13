@@ -22,13 +22,13 @@ You can run VibeGuard instantly using `npx`, or install it globally/locally.
 
 ```bash
 # Run without installing
-npx vibeguard-scan scan .
+npx vibeguard scan .
 
 # Install globally
-npm install -g vibeguard-scan
+npm install -g vibeguard
 
 # Install as a dev dependency
-npm install -D vibeguard-scan
+npm install -D vibeguard
 ```
 
 ## Usage
@@ -38,13 +38,13 @@ npm install -D vibeguard-scan
 Scan the current directory:
 
 ```bash
-vibeguard-scan scan .
+vibeguard scan .
 ```
 
 Scan a specific directory and fail if the score drops below 80:
 
 ```bash
-vibeguard-scan scan src/ --fail-below 80
+vibeguard scan src/ --fail-below 80
 ```
 
 ### Configuration
@@ -52,7 +52,7 @@ vibeguard-scan scan src/ --fail-below 80
 Initialize a default configuration file in your project:
 
 ```bash
-vibeguard-scan init
+vibeguard init
 ```
 
 This creates a `.vibeguard.yaml` file where you can customize the scanner:
@@ -91,13 +91,13 @@ showBadge: true
 Prevent vulnerable code from being committed by installing the pre-commit hook:
 
 ```bash
-vibeguard-scan hook install
+vibeguard hook install
 ```
 
 To remove the hook:
 
 ```bash
-vibeguard-scan hook uninstall
+vibeguard hook uninstall
 ```
 
 ## Integrating with GitHub Actions

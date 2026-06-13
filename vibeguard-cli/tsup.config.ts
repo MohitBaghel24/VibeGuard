@@ -2,7 +2,7 @@ import { defineConfig } from "tsup";
 export default defineConfig({
   entry: {
     index: "src/index.ts",
-    cli: "src/cli/bin.ts"
+    "cli/index": "src/cli/bin.ts"
   },
   outDir: "dist",
   target: "es2022",

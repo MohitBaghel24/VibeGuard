@@ -6,10 +6,10 @@ import util from 'util';
 const execPromise = util.promisify(exec);
 
 describe('Integration: dist/cli.js (E2E)', () => {
-  const cliPath = path.resolve(__dirname, '../../dist/cli.js');
+  const cliPath = path.resolve(__dirname, '../../dist/cli/index.js');
   const fixturesPath = path.resolve(__dirname, '../fixtures/integration');
 
-  it('runs npx vibeguard-scan (dist/cli.js) properly', async () => {
+  it('runs npx vibeguard (dist/cli/index.js) properly', async () => {
     try {
       await execPromise(`node ${cliPath} scan ${fixturesPath} --fail-below 100`);
       // Should throw because issues are found (exit code 5)
