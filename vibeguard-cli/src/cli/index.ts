@@ -114,4 +114,6 @@ export const runCLI = () => {
   program.parse(process.argv);
 };
 
-runCLI();
+if (process.env.NODE_ENV !== 'test' && !process.env.VITEST) {
+  runCLI();
+}
