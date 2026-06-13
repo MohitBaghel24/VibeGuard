@@ -10,6 +10,7 @@ import { PathTraversalDetector } from './detectors/pathTraversal.js';
 import { AIHallucinationDetector } from './detectors/hallucinations.js';
 import { CommandInjectionDetector } from './detectors/cmdInjection.js';
 import { SSRFDetector } from './detectors/ssrf.js';
+import { AstTaintDetector } from './detectors/astTaint.js';
 import path from 'path';
 
 export interface ScannerOptions {
@@ -25,7 +26,8 @@ export const AllDetectors: Detector[] = [
   new XSSDetector(),
   new PathTraversalDetector(),
   new CommandInjectionDetector(),
-  new SSRFDetector()
+  new SSRFDetector(),
+  new AstTaintDetector()
 ];
 
 export function scanFile(filePath: string, content: string, detectors: Detector[]): Issue[] {
