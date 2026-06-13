@@ -20,8 +20,8 @@ export async function installHook(gitHooksPath?: string): Promise<void> {
     if (!stats.isDirectory()) {
       throw new Error('.git/hooks is not a directory');
     }
-  } catch (e) {
-    throw new Error('Could not find .git/hooks directory. Are you in the root of a git repository?');
+  } catch (e: any) {
+    throw new Error('Could not find .git/hooks directory. Are you in the root of a git repository?', { cause: e });
   }
 
   const hookPath = path.join(hooksDir, 'pre-commit');
@@ -42,7 +42,7 @@ export async function uninstallHook(gitHooksPath?: string): Promise<void> {
     }
   } catch (e: any) {
     if (e.code === 'ENOENT') {
-      throw new Error('No pre-commit hook found.');
+      throw new Error('No pre-commit hook found.', { cause: e });
     }
     throw e;
   }

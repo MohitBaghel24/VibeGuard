@@ -24,7 +24,7 @@ export function toSarif(result: ScanResult): string {
   for (const issue of result.issues) {
     if (!ruleIds.has(issue.detectorId)) {
       ruleIds.add(issue.detectorId);
-      let shortDescription = "";
+      let shortDescription: string;
       switch (issue.detectorId) {
         case "secrets": shortDescription = "Hardcoded Secret"; break;
         case "sql": shortDescription = "SQL Injection"; break;

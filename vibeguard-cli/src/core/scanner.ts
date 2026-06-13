@@ -40,7 +40,7 @@ export async function scan(options: ScannerOptions): Promise<ScanResult> {
 
   let totalLinesScanned = 0;
   let filesSkipped = 0;
-  let allIssues: Issue[] = [];
+  const allIssues: Issue[] = [];
 
   for (const filePath of filePaths) {
     const absPath = path.resolve(rootPath, filePath);
