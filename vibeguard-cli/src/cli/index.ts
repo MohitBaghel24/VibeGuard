@@ -21,7 +21,7 @@ try {
 export const program = new Command();
 
 program
-  .name('vibeguard')
+  .name('vibeguard-scan')
   .description('Security scanner for AI-generated code')
   .version(pkg.version);
 

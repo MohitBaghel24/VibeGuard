@@ -1,5 +1,5 @@
 {
-  "name": "vibeguard",
+  "name": "vibeguard-scan",
   "version": "0.1.2",
   "main": "./dist/index.js",
   "files": [
@@ -50,7 +50,7 @@
   },
   "type": "module",
   "bin": {
-    "vibeguard": "./dist/cli/index.js"
+    "vibeguard-scan": "./dist/cli/index.js"
   },
   "engines": {
     "node": ">=18.0.0"
