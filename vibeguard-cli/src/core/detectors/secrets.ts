@@ -59,7 +59,7 @@ export const PATTERNS: SecretPattern[] = [
   { id: 'stripe-live-key', name: 'Stripe Live Key', regex: /sk_live_[0-9a-zA-Z]{24}/g, severity: Severity.CRITICAL, falsePositiveFilters: [{ name: 'common', test: isFalsePositive }] },
   { id: 'supabase-key', name: 'Supabase Key', regex: /supabase[a-z0-9_]*key\s*[:=]\s*["']?([^"'\s]{20,})["']?/gi, severity: Severity.CRITICAL, falsePositiveFilters: [{ name: 'common', test: isFalsePositive }] },
   { id: 'generic-api-key', name: 'Generic API Key', regex: /(?:api[_-]?key|apikey|api_secret|token)\s*[:=]\s*["']?([^"'\s]{20,})["']?/gi, severity: Severity.HIGH, entropyThreshold: 3.0, falsePositiveFilters: [{ name: 'common', test: isFalsePositive }] },
-  { id: 'bearer-token', name: 'Bearer Token', regex: /bearer\s+[0-9a-zA-Z\-._~+/]+=*/gi, severity: Severity.HIGH, falsePositiveFilters: [{ name: 'common', test: isFalsePositive }] },
+  { id: 'bearer-token', name: 'Bearer Token', regex: /bearer\s+[0-9a-zA-Z\-._~+/]{20,}=*/gi, severity: Severity.HIGH, falsePositiveFilters: [{ name: 'common', test: isFalsePositive }] },
   { id: 'jwt-token', name: 'JWT Token', regex: /eyJ[A-Za-z0-9-_]+\.eyJ[A-Za-z0-9-_]+\.[A-Za-z0-9-_+/]+=*/g, severity: Severity.HIGH, falsePositiveFilters: [{ name: 'common', test: isFalsePositive }] },
   { id: 'private-key', name: 'Private Key', regex: /-----BEGIN (RSA|DSA|EC|OPENSSH|PGP) PRIVATE KEY-----/g, severity: Severity.CRITICAL, falsePositiveFilters: [{ name: 'common', test: isFalsePositive }] },
   { id: 'slack-token', name: 'Slack Token', regex: /xox[baprs]-[0-9a-zA-Z-]+/g, severity: Severity.HIGH, falsePositiveFilters: [{ name: 'common', test: isFalsePositive }] },
@@ -105,9 +105,14 @@ export class SecretDetector implements Detector {
             }
           }
 
-          const redacted = matchText.length > 8 
-            ? `${matchText.substring(0, 4)}***${matchText.substring(matchText.length - 4)}`
-            : '***';
+          let redacted = '***REDACTED***';
+          if (matchText.includes('=')) {
+            redacted = matchText.split('=')[0] + '=***REDACTED***';
+          } else if (matchText.includes(':')) {
+            redacted = matchText.split(':')[0] + ': ***REDACTED***';
+          } else if (matchText.toLowerCase().startsWith('bearer ')) {
+            redacted = 'Bearer ***REDACTED***';
+          }
 
           const confidence = pattern.entropyThreshold !== undefined 
             ? Math.min(0.95, calculateEntropy(capturedValue) / 5)

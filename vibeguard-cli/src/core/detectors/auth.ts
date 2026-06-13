@@ -34,7 +34,15 @@ export class AuthChecker implements Detector {
         while ((match = expressRegex.exec(line)) !== null) {
           const routePath = match[1];
           if (isSensitive(routePath)) {
-            if (!hasAuth(line)) {
+            let authFound = false;
+            for (let i = Math.max(0, lineIdx - 2); i <= Math.min(lines.length - 1, lineIdx + 5); i++) {
+              if (hasAuth(lines[i])) {
+                authFound = true;
+                break;
+              }
+            }
+
+            if (!authFound) {
                issues.push({
                 id: `auth:${hash(`${filePath}:${lineNumber}:${match.index}`)}`,
                 detectorId: this.id,

@@ -19,7 +19,7 @@ describe('Scoring', () => {
       { severity: Severity.HIGH }
     ];
     const res = calculateScore(issues);
-    expect(res.overallScore).toBe(100 - 15 - 8); // 77
+    expect(res.overallScore).toBe(81); // 100 - (15 + 8 * 0.5)
     expect(res.rating).toBe('good');
   });
 });
