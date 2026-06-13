@@ -42,11 +42,16 @@ describe('config utils', () => {
 
   it('should validate and throw ConfigError for bad values', async () => {
     await expect(loadConfig({ scoreThreshold: 150 })).rejects.toThrowError(ConfigError);
+    await expect(loadConfig({ scoreThreshold: -10 })).rejects.toThrowError(ConfigError);
+    await expect(loadConfig({ minSeverity: 'invalid_severity' as any })).rejects.toThrowError(ConfigError);
   });
   
   it('initConfig should create .vibeguard.yaml', async () => {
     await initConfig(tempDir);
     const content = await fs.readFile(path.join(tempDir, '.vibeguard.yaml'), 'utf-8');
     expect(content).toContain('minSeverity: low');
+    
+    // Should throw if it already exists
+    await expect(initConfig(tempDir)).rejects.toThrowError(ConfigError);
   });
 });
