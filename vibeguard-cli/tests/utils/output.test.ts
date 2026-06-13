@@ -4,8 +4,10 @@ import { ScanResult, Severity } from '../../src/types/index.js';
 
 describe('Output Formatter', () => {
   const mockResult: ScanResult = {
+    timestamp: '2026-06-13T00:00:00Z',
     version: '1.0.0',
     filesScanned: 10,
+    filesSkipped: 0,
     durationMs: 150,
     linesScanned: 1000,
     overallScore: 85,
