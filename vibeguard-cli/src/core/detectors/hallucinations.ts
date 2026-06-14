@@ -52,7 +52,7 @@ export class AIHallucinationDetector implements Detector {
     
     // Regex matches: import 'pkg', import x from 'pkg', require('pkg')
     // and correctly isolates the package name, ignoring local paths starting with . or /
-    const importRegex = /(?:import\s+(?:[\s\S]*?from\s+)?|require\s*\(\s*)(["'])([^"'\.\/][^"']+)\1/g;
+    const importRegex = /(?:import\s+(?:[\s\S]*?from\s+)?|require\s*\(\s*)(["'])([^"'./][^"']+)\1/g;
     
     const getLineNumber = (index: number) => {
       let count = 1;

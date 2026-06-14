@@ -52,11 +52,11 @@ export function parseEnvConfig(): Partial<VibeGuardConfig> {
 
 export async function loadConfig(cliOverrides?: Partial<VibeGuardConfig>, configPath?: string): Promise<VibeGuardConfig> {
   let fileConfig: any = {};
-  
+
   try {
     const defaultPath = path.resolve(process.cwd(), '.vibeguard.yaml');
     const targetPath = configPath ? path.resolve(process.cwd(), configPath) : defaultPath;
-    
+
     try {
       const content = await fs.readFile(targetPath, 'utf-8');
       fileConfig = yaml.parse(content) || {};
@@ -65,23 +65,23 @@ export async function loadConfig(cliOverrides?: Partial<VibeGuardConfig>, config
         throw new ConfigError(`Failed to load config from ${targetPath}: ${err.message}`);
       }
     }
-    
+
     const envConfig = parseEnvConfig();
-    
+
     const merged = {
       ...fileConfig,
       ...envConfig,
       ...(cliOverrides || {})
     };
-    
+
     // Remove undefined values to let defaults kick in properly
     Object.keys(merged).forEach(key => merged[key] === undefined && delete merged[key]);
-    
+
     const result = configSchema.safeParse(merged);
     if (!result.success) {
       throw new ConfigError(`Configuration validation failed: ${result.error.issues.map((e: any) => `${e.path.join('.')}: ${e.message}`).join(', ')}`);
     }
-    
+
     return result.data as VibeGuardConfig;
   } catch (error: any) {
     if (error instanceof ConfigError) throw error;

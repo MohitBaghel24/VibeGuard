@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VibeGuard Security Report</title>
+  <style>
+    :root {
+      --bg-color: #0f172a; /* slate-900 */
+      --card-bg: #1e293b; /* slate-800 */
+      --card-border: #334155; /* slate-700 */
+      --text-main: #f8fafc; /* slate-50 */
+      --text-muted: #94a3b8; /* slate-400 */
+      --primary: #8b5cf6; /* violet-500 */
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding: 2rem;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 3rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(to right, #a855f7, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .timestamp {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .stat-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    .stat-card.score-card {
+      border-top: 4px solid #ef4444;
+    }
+
+    .stat-value {
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      color: var(--text-muted);
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .issues-section {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 2rem;
+    }
+
+    .issues-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .issues-header h2 {
+      font-size: 1.8rem;
+    }
+
+    .filters {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .filter-btn {
+      background-color: transparent;
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+    }
+
+    .filter-btn:hover, .filter-btn.active {
+      background-color: var(--card-border);
+      color: var(--text-main);
+    }
+
+    .issue-card {
+      background-color: rgba(15, 23, 42, 0.5);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      transition: transform 0.2s ease;
+    }
+    
+    .issue-card:hover {
+      transform: translateY(-2px);
+      border-color: #475569;
+    }
+
+    .issue-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    .issue-title-group {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .severity-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      border: 1px solid;
+    }
+
+    .issue-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .issue-location {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      background-color: rgba(0,0,0,0.2);
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+    }
+
+    .issue-description {
+      color: #cbd5e1;
+      margin-bottom: 1.5rem;
+    }
+
+    .code-snippet {
+      background-color: #000000;
+      border-radius: 6px;
+      padding: 1rem;
+      overflow-x: auto;
+      border: 1px solid var(--card-border);
+    }
+
+    .code-snippet pre {
+      margin: 0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.9rem;
+    }
+
+    .line-number {
+      color: var(--text-muted);
+      margin-right: 1rem;
+      user-select: none;
+    }
+
+    .issue-fix {
+      margin-top: 1rem;
+      padding: 1rem;
+      background-color: rgba(34, 197, 94, 0.1);
+      border-left: 4px solid #22c55e;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--text-muted);
+    }
+
+    .empty-state h3 {
+      font-size: 1.5rem;
+      color: var(--text-main);
+      margin-bottom: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      .issue-header {
+        flex-direction: column;
+        gap: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>VibeGuard</h1>
+      <div class="timestamp">Scan generated at: 6/14/2026, 11:59:31 AM</div>
+    </header>
+
+    <div class="dashboard-grid">
+      <div class="stat-card score-card">
+        <div class="stat-value" style="color: #ef4444">0</div>
+        <div class="stat-label">Safety Score</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">28</div>
+        <div class="stat-label">Total Issues</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">26</div>
+        <div class="stat-label">Files Scanned</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">0.04s</div>
+        <div class="stat-label">Scan Duration</div>
+      </div>
+    </div>
+
+    <section class="issues-section">
+      <div class="issues-header">
+        <h2>Detected Vulnerabilities</h2>
+        <div class="filters">
+          <button class="filter-btn active" onclick="filterIssues('all')">All</button>
+          <button class="filter-btn" onclick="filterIssues('critical')">Critical</button>
+          <button class="filter-btn" onclick="filterIssues('high')">High</button>
+          <button class="filter-btn" onclick="filterIssues('medium')">Medium</button>
+          <button class="filter-btn" onclick="filterIssues('low')">Low</button>
+        </div>
+      </div>
+
+      <div class="issues-list" id="issuesList">
+        
+    <div class="issue-card" data-severity="high">
+      <div class="issue-header">
+        <div class="issue-title-group">
+          <span class="severity-badge" style="background-color: #f9731615; color: #f97316; border-color: #f9731640;">
+            HIGH
+          </span>
+          <h3 class="issue-title">AI Hallucination: Unknown Package &#039;commander&#039;</h3>
+        </div>
+        <span class="issue-location">cli/index.ts:1</span>
+      </div>
+      <p class="issue-description">The imported package &#039;commander&#039; is not defined in package.json and is not a Node.js built-in. AI models frequently hallucinate non-existent packages.</p>
+      <div class="code-snippet">
+        <pre><code><span class="line-number">1</span>import { Command } from &#039;commander&#039;;</code></pre>
+      </div>
+      <div class="issue-fix"><strong>Suggested Fix:</strong> Install the missing package or replace it with a valid alternative.</div>
+    </div>
+  
+    <div class="issue-card" data-severity="high">
+      <div class="issue-header">
+        <div class="issue-title-group">
+          <span class="severity-badge" style="background-color: #f9731615; color: #f97316; border-color: #f9731640;">
+            HIGH
+          </span>
+          <h3 class="issue-title">AI Hallucination: Unknown Package &#039;open&#039;</h3>
+        </div>
+        <span class="issue-location">cli/index.ts:8</span>
+      </div>
+      <p class="issue-description">The imported package &#039;open&#039; is not defined in package.json and is not a Node.js built-in. AI models frequently hallucinate non-existent packages.</p>
+      <div class="code-snippet">
+        <pre><code><span class="line-number">8</span>import open from &#039;open&#039;;</code></pre>
+      </div>
+      <div class="issue-fix"><strong>Suggested Fix:</strong> Install the missing package or replace it with a valid alternative.</div>
+    </div>
+  
+    <div class="issue-card" data-severity="high">
+      <div class="issue-header">
+        <div class="issue-title-group">
+          <span class="severity-badge" style="background-color: #f9731615; color: #f97316; border-color: #f9731640;">
+            HIGH
+          </span>
+          <h3 class="issue-title">AI Hallucination: Unknown Package &#039;commander&#039;</h3>
+        </div>
+        <span class="issue-location">commands/fix.ts:1</span>
+      </div>
+      <p class="issue-description">The imported package &#039;commander&#039; is not defined in package.json and is not a Node.js built-in. AI models frequently hallucinate non-existent packages.</p>
+      <div class="code-snippet">
+        <pre><code><span class="line-number">1</span>import { Command } from &#039;commander&#039;;</code></pre>
+      </div>
+      <div class="issue-fix"><strong>Suggested Fix:</strong> Install the missing package or replace it with a valid alternative.</div>
+    </div>
+  
+    <div class="issue-card" data-severity="high">
+      <div class="issue-header">
+        <div class="issue-title-group">
+          <span class="severity-badge" style="background-color: #f9731615; color: #f97316; border-color: #f9731640;">
+            HIGH
+          </span>
+          <h3 class="issue-title">AI Hallucination: Unknown Package &#039;@inquirer/prompts&#039;</h3>
+        </div>
+        <span class="issue-location">commands/fix.ts:2</span>
+      </div>
+      <p class="issue-description">The imported package &#039;@inquirer/prompts&#039; is not defined in package.json and is not a Node.js built-in. AI models frequently hallucinate non-existent packages.</p>
+      <div class="code-snippet">
+        <pre><code><span class="line-number">2</span>import { input } from &#039;@inquirer/prompts&#039;;</code></pre>
+      </div>
+      <div class="issue-fix"><strong>Suggested Fix:</strong> Install the missing package or replace it with a valid alternative.</div>
+    </div>
+  
+    <div class="issue-card" data-severity="high">
+      <div class="issue-header">
+        <div class="issue-title-group">
+          <span class="severity-badge" style="background-color: #f9731615; color: #f97316; border-color: #f9731640;">
+            HIGH
+          </span>
+          <h3 class="issue-title">AI Hallucination: Unknown Package &#039;chalk&#039;</h3>
+        </div>
+        <span class="issue-location">commands/fix.ts:7</span>
+      </div>
+      <p class="issue-description">The imported package &#039;chalk&#039; is not defined in package.json and is not a Node.js built-in. AI models frequently hallucinate non-existent packages.</p>
+      <div class="code-snippet">
+        <pre><code><span class="line-number">7</span>import chalk from &#039;chalk&#039;;</code></pre>
+      </div>
+      <div class="issue-fix"><strong>Suggested Fix:</strong> Install the missing package or replace it with a valid alternative.</div>
+    </div>
+  
+    <div class="issue-card" data-severity="high">
+      <div class="issue-header">
+        <div class="issue-title-group">
+          <span class="severity-badge" style="background-color: #f9731615; color: #f97316; border-color: #f9731640;">
+            HIGH
+          </span>
+          <h3 class="issue-title">AI Hallucination: Unknown Package &#039;commander&#039;</h3>
+        </div>
+        <span class="issue-location">commands/hook.ts:1</span>
+      </div>
+      <p class="issue-description">The imported package &#039;commander&#039; is not defined in package.json and is not a Node.js built-in. AI models frequently hallucinate non-existent packages.</p>
+      <div class="code-snippet">
+        <pre><code><span class="line-number">1</span>import { Command } from &#039;commander&#039;;</code></pre>
+      </div>
+      <div class="issue-fix"><strong>Suggested Fix:</strong> Install the missing package or replace it with a valid alternative.</div>
+    </div>
+  
+    <div class="issue-card" data-severity="high">
+      <div class="issue-header">
+        <div class="issue-title-group">
+          <span class="severity-badge" style="background-color: #f9731615; color: #f97316; border-color: #f9731640;">
+            HIGH
+          </span>
+          <h3 class="issue-title">AI Hallucination: Unknown Package &#039;@modelcontextprotocol/sdk&#039;</h3>
+        </div>
+        <span class="issue-location">mcp/server.ts:1</span>
+      </div>
+      <p class="issue-description">The imported package &#039;@modelcontextprotocol/sdk&#039; is not defined in package.json and is not a Node.js built-in. AI models frequently hallucinate non-existent packages.</p>
+      <div class="code-snippet">
+        <pre><code><span class="line-number">1</span>import { Server } from &quot;@modelcontextprotocol/sdk/server/index.js&quot;;</code></pre>
+      </div>
+      <div class="issue-fix"><strong>Suggested Fix:</strong> Install the missing package or replace it with a valid alternative.</div>
+    </div>
+  
+    <div class="issue-card" data-severity="high">
+      <div class="issue-header">
+        <div class="issue-title-group">
+          <span class="severity-badge" style="background-color: #f9731615; color: #f97316; border-color: #f9731640;">
+            HIGH
+          </span>
+          <h3 class="issue-title">AI Hallucination: Unknown Package &#039;@modelcontextprotocol/sdk&#039;</h3>
+        </div>
+        <span class="issue-location">mcp/server.ts:2</span>
+      </div>
+      <p class="issue-description">The imported package &#039;@modelcontextprotocol/sdk&#039; is not defined in package.json and is not a Node.js built-in. AI models frequently hallucinate non-existent packages.</p>
+      <div class="code-snippet">
+        <pre><code><span class="line-number">2</span>import { StdioServerTransport } from &quot;@modelcontextprotocol/sdk/server/stdio.js&quot;;</code></pre>
+      </div>
+      <div class="issue-fix"><strong>Suggested Fix:</strong> Install the missing package or replace it with a valid alternative.</div>
+    </div>
+  
+    <div class="issue-card" data-severity="high">
+      <div class="issue-header">
+        <div class="issue-title-group">
+          <span class="severity-badge" style="background-color: #f9731615; color: #f97316; border-color: #f9731640;">
+            HIGH
+          </span>
+          <h3 class="issue-title">AI Hallucination: Unknown Package &#039;@modelcontextprotocol/sdk&#039;</h3>
+        </div>
+        <span class="issue-location">mcp/server.ts:3</span>
+      </div>
+      <p class="issue-description">The imported package &#039;@modelcontextprotocol/sdk&#039; is not defined in package.json and is not a Node.js built-in. AI models frequently hallucinate non-existent packages.</p>
+      <div class="code-snippet">
+        <pre><code><span class="line-number">3</span>import { CallToolRequestSchema, ListToolsRequestSchema } from &quot;@modelcontextprotocol/sdk/types.js&quot;;</code></pre>
+      </div>
+      <div class="issue-fix"><strong>Suggested Fix:</strong> Install the missing package or replace it with a valid alternative.</div>
+    </div>
+  
+    <div class="issue-card" data-severity="high">
+      <div class="issue-header">
+        <div class="issue-title-group">
+          <span class="severity-badge" style="background-color: #f9731615; color: #f97316; border-color: #f9731640;">
+            HIGH
+          </span>
+          <h3 class="issue-title">AI Hallucination: Unknown Package &#039;zod&#039;</h3>
+        </div>
+        <span class="issue-location">utils/config.ts:1</span>
+      </div>
+      <p class="issue-description">The imported package &#039;zod&#039; is not defined in package.json and is not a Node.js built-in. AI models frequently hallucinate non-existent packages.</p>
+      <div class="code-snippet">
+        <pre><code><span class="line-number">1</span>import { z } from &#039;zod&#039;;</code></pre>
+      </div>
+      <div class="issue-fix"><strong>Suggested Fix:</strong> Install the missing package or replace it with a valid alternative.</div>
+    </div>
+  
+    <div class="issue-card" data-severity="high">
+      <div class="issue-header">
+        <div class="issue-title-group">
+          <span class="severity-badge" style="background-color: #f9731615; color: #f97316; border-color: #f9731640;">
+            HIGH
+          </span>
+          <h3 class="issue-title">AI Hallucination: Unknown Package &#039;yaml&#039;</h3>
+        </div>
+        <span class="issue-location">utils/config.ts:4</span>
+      </div>
+      <p class="issue-description">The imported package &#039;yaml&#039; is not defined in package.json and is not a Node.js built-in. AI models frequently hallucinate non-existent packages.</p>
+      <div class="code-snippet">
+        <pre><code><span class="line-number">4</span>import yaml from &#039;yaml&#039;;</code></pre>
+      </div>
+      <div class="issue-fix"><strong>Suggested Fix:</strong> Install the missing package or replace it with a valid alternative.</div>
+    </div>
+  
+    <div class="issue-card" data-severity="critical">
+      <div class="issue-header">
+        <div class="issue-title-group">
+          <span class="severity-badge" style="background-color: #ef444415; color: #ef4444; border-color: #ef444440;">
+            CRITICAL
+          </span>
+          <h3 class="issue-title">Command Injection Risk: js-cmd-injection</h3>
+        </div>
+        <span class="issue-location">utils/falsePositives.ts:18</span>
+      </div>
+      <p class="issue-description">Potential Command Injection via Node.js exec/spawn. Ensure input is strictly sanitized or avoid shell execution.</p>
+      <div class="code-snippet">
+        <pre><code><span class="line-number">18</span>  while ((match = blockCommentRegex.exec(cleaned)) !== null) {</code></pre>
+      </div>
+      
+    </div>
+  
+    <div class="issue-card" data-severity="critical">
+      <div class="issue-header">
+        <div class="issue-title-group">
+          <span class="severity-badge" style="background-color: #ef444415; color: #ef4444; border-color: #ef444440;">
+            CRITICAL
+          </span>
+          <h3 class="issue-title">Command Injection Risk: js-cmd-injection</h3>
+        </div>
+        <span class="issue-location">utils/falsePositives.ts:24</span>
+      </div>
+      <p class="issue-description">Potential Command Injection via Node.js exec/spawn. Ensure input is strictly sanitized or avoid shell execution.</p>
+      <div class="code-snippet">
+        <pre><code><span class="line-number">24</span>  while ((match = lineCommentRegex.exec(cleaned)) !== null) {</code></pre>
+      </div>
+      
+    </div>
+  
+    <div class="issue-card" data-severity="critical">
+      <div class="issue-header">
+        <div class="issue-title-group">
+          <span class="severity-badge" style="background-color: #ef444415; color: #ef4444; border-color: #ef444440;">
+            CRITICAL
+          </span>
+          <h3 class="issue-title">Command Injection Risk: js-cmd-injection</h3>
+        </div>
+        <span class="issue-location">utils/falsePositives.ts:31</span>
+      </div>
+      <p class="issue-description">Potential Command Injection via Node.js exec/spawn. Ensure input is strictly sanitized or avoid shell execution.</p>
+      <div class="code-snippet">
+        <pre><code><span class="line-number">31</span>    while ((match = pyCommentRegex.exec(cleaned)) !== null) {</code></pre>
+      </div>
+      
+    </div>
+  
+    <div class="issue-card" data-severity="high">
+      <div class="issue-header">
+        <div class="issue-title-group">
+          <span class="severity-badge" style="background-color: #f9731615; color: #f97316; border-color: #f9731640;">
+            HIGH
+          </span>
+          <h3 class="issue-title">AI Hallucination: Unknown Package &#039;globby&#039;</h3>
+        </div>
+        <span class="issue-location">utils/files.ts:3</span>
+      </div>
+      <p class="issue-description">The imported package &#039;globby&#039; is not defined in package.json and is not a Node.js built-in. AI models frequently hallucinate non-existent packages.</p>
+      <div class="code-snippet">
+        <pre><code><span class="line-number">3</span>import { globby } from &#039;globby&#039;;</code></pre>
+      </div>
+      <div class="issue-fix"><strong>Suggested Fix:</strong> Install the missing package or replace it with a valid alternative.</div>
+    </div>
+  
+    <div class="issue-card" data-severity="critical">
+      <div class="issue-header">
+        <div class="issue-title-group">
+          <span class="severity-badge" style="background-color: #ef444415; color: #ef4444; border-color: #ef444440;">
+            CRITICAL
+          </span>
+          <h3 class="issue-title">SQL Injection Detected: js-sql-template-literal</h3>
+        </div>
+        <span class="issue-location">utils/html-reporter.ts:49</span>
+      </div>
+      <p class="issue-description">SQL injection via template literal. Use parameterized queries instead.</p>
+      <div class="code-snippet">
+        <pre><code><span class="line-number">49</span>  const html = `&lt;!DOCTYPE html&gt;</code></pre>
+      </div>
+      
+    </div>
+  
+    <div class="issue-card" data-severity="high">
+      <div class="issue-header">
+        <div class="issue-title-group">
+          <span class="severity-badge" style="background-color: #f9731615; color: #f97316; border-color: #f9731640;">
+            HIGH
+          </span>
+          <h3 class="issue-title">AI Hallucination: Unknown Package &#039;chalk&#039;</h3>
+        </div>
+        <span class="issue-location">utils/output.ts:1</span>
+      </div>
+      <p class="issue-description">The imported package &#039;chalk&#039; is not defined in package.json and is not a Node.js built-in. AI models frequently hallucinate non-existent packages.</p>
+      <div class="code-snippet">
+        <pre><code><span class="line-number">1</span>import chalk from &#039;chalk&#039;;</code></pre>
+      </div>
+      <div class="issue-fix"><strong>Suggested Fix:</strong> Install the missing package or replace it with a valid alternative.</div>
+    </div>
+  
+    <div class="issue-card" data-severity="high">
+      <div class="issue-header">
+        <div class="issue-title-group">
+          <span class="severity-badge" style="background-color: #f9731615; color: #f97316; border-color: #f9731640;">
+            HIGH
+          </span>
+          <h3 class="issue-title">AI Hallucination: Unknown Package &#039;typescript&#039;</h3>
+        </div>
+        <span class="issue-location">core/ast/taintAnalyzer.ts:1</span>
+      </div>
+      <p class="issue-description">The imported package &#039;typescript&#039; is not defined in package.json and is not a Node.js built-in. AI models frequently hallucinate non-existent packages.</p>
+      <div class="code-snippet">
+        <pre><code><span class="line-number">1</span>import ts from &#039;typescript&#039;;</code></pre>
+      </div>
+      <div class="issue-fix"><strong>Suggested Fix:</strong> Install the missing package or replace it with a valid alternative.</div>
+    </div>
+  
+    <div class="issue-card" data-severity="critical">
+      <div class="issue-header">
+        <div class="issue-title-group">
+          <span class="severity-badge" style="background-color: #ef444415; color: #ef4444; border-color: #ef444440;">
+            CRITICAL
+          </span>
+          <h3 class="issue-title">Command Injection Risk: js-cmd-injection</h3>
+        </div>
+        <span class="issue-location">core/detectors/auth.ts:34</span>
+      </div>
+      <p class="issue-description">Potential Command Injection via Node.js exec/spawn. Ensure input is strictly sanitized or avoid shell execution.</p>
+      <div class="code-snippet">
+        <pre><code><span class="line-number">34</span>        while ((match = expressRegex.exec(line)) !== null) {</code></pre>
+      </div>
+      
+    </div>
+  
+    <div class="issue-card" data-severity="critical">
+      <div class="issue-header">
+        <div class="issue-title-group">
+          <span class="severity-badge" style="background-color: #ef444415; color: #ef4444; border-color: #ef444440;">
+            CRITICAL
+          </span>
+          <h3 class="issue-title">Command Injection Risk: js-cmd-injection</h3>
+        </div>
+        <span class="issue-location">core/detectors/auth.ts:69</span>
+      </div>
+      <p class="issue-description">Potential Command Injection via Node.js exec/spawn. Ensure input is strictly sanitized or avoid shell execution.</p>
+      <div class="code-snippet">
+        <pre><code><span class="line-number">69</span>        while ((match = pyRegex.exec(line)) !== null) {</code></pre>
+      </div>
+      
+    </div>
+  
+    <div class="issue-card" data-severity="critical">
+      <div class="issue-header">
+        <div class="issue-title-group">
+          <span class="severity-badge" style="background-color: #ef444415; color: #ef4444; border-color: #ef444440;">
+            CRITICAL
+          </span>
+          <h3 class="issue-title">Command Injection Risk: js-cmd-injection</h3>
+        </div>
+        <span class="issue-location">core/detectors/cmdInjection.ts:56</span>
+      </div>
+      <p class="issue-description">Potential Command Injection via Node.js exec/spawn. Ensure input is strictly sanitized or avoid shell execution.</p>
+      <div class="code-snippet">
+        <pre><code><span class="line-number">56</span>      while ((match = pattern.regex.exec(content)) !== null) {</code></pre>
+      </div>
+      
+    </div>
+  
+    <div class="issue-card" data-severity="critical">
+      <div class="issue-header">
+        <div class="issue-title-group">
+          <span class="severity-badge" style="background-color: #ef444415; color: #ef4444; border-color: #ef444440;">
+            CRITICAL
+          </span>
+          <h3 class="issue-title">Command Injection Risk: js-cmd-injection</h3>
+        </div>
+        <span class="issue-location">core/detectors/hallucinations.ts:66</span>
+      </div>
+      <p class="issue-description">Potential Command Injection via Node.js exec/spawn. Ensure input is strictly sanitized or avoid shell execution.</p>
+      <div class="code-snippet">
+        <pre><code><span class="line-number">66</span>    while ((match = importRegex.exec(content)) !== null) {</code></pre>
+      </div>
+      
+    </div>
+  
+    <div class="issue-card" data-severity="critical">
+      <div class="issue-header">
+        <div class="issue-title-group">
+          <span class="severity-badge" style="background-color: #ef444415; color: #ef4444; border-color: #ef444440;">
+            CRITICAL
+          </span>
+          <h3 class="issue-title">Command Injection Risk: js-cmd-injection</h3>
+        </div>
+        <span class="issue-location">core/detectors/pathTraversal.ts:50</span>
+      </div>
+      <p class="issue-description">Potential Command Injection via Node.js exec/spawn. Ensure input is strictly sanitized or avoid shell execution.</p>
+      <div class="code-snippet">
+        <pre><code><span class="line-number">50</span>      while ((match = pattern.regex.exec(content)) !== null) {</code></pre>
+      </div>
+      
+    </div>
+  
+    <div class="issue-card" data-severity="critical">
+      <div class="issue-header">
+        <div class="issue-title-group">
+          <span class="severity-badge" style="background-color: #ef444415; color: #ef4444; border-color: #ef444440;">
+            CRITICAL
+          </span>
+          <h3 class="issue-title">Command Injection Risk: js-cmd-injection</h3>
+        </div>
+        <span class="issue-location">core/detectors/secrets.ts:99</span>
+      </div>
+      <p class="issue-description">Potential Command Injection via Node.js exec/spawn. Ensure input is strictly sanitized or avoid shell execution.</p>
+      <div class="code-snippet">
+        <pre><code><span class="line-number">99</span>        while ((match = pattern.regex.exec(line)) !== null) {</code></pre>
+      </div>
+      
+    </div>
+  
+    <div class="issue-card" data-severity="critical">
+      <div class="issue-header">
+        <div class="issue-title-group">
+          <span class="severity-badge" style="background-color: #ef444415; color: #ef4444; border-color: #ef444440;">
+            CRITICAL
+          </span>
+          <h3 class="issue-title">Command Injection Risk: js-cmd-injection</h3>
+        </div>
+        <span class="issue-location">core/detectors/sql.ts:81</span>
+      </div>
+      <p class="issue-description">Potential Command Injection via Node.js exec/spawn. Ensure input is strictly sanitized or avoid shell execution.</p>
+      <div class="code-snippet">
+        <pre><code><span class="line-number">81</span>      while ((match = pattern.regex.exec(content)) !== null) {</code></pre>
+      </div>
+      
+    </div>
+  
+    <div class="issue-card" data-severity="critical">
+      <div class="issue-header">
+        <div class="issue-title-group">
+          <span class="severity-badge" style="background-color: #ef444415; color: #ef4444; border-color: #ef444440;">
+            CRITICAL
+          </span>
+          <h3 class="issue-title">Command Injection Risk: js-cmd-injection</h3>
+        </div>
+        <span class="issue-location">core/detectors/ssrf.ts:50</span>
+      </div>
+      <p class="issue-description">Potential Command Injection via Node.js exec/spawn. Ensure input is strictly sanitized or avoid shell execution.</p>
+      <div class="code-snippet">
+        <pre><code><span class="line-number">50</span>      while ((match = pattern.regex.exec(content)) !== null) {</code></pre>
+      </div>
+      
+    </div>
+  
+    <div class="issue-card" data-severity="critical">
+      <div class="issue-header">
+        <div class="issue-title-group">
+          <span class="severity-badge" style="background-color: #ef444415; color: #ef4444; border-color: #ef444440;">
+            CRITICAL
+          </span>
+          <h3 class="issue-title">SSRF Risk: js-ssrf</h3>
+        </div>
+        <span class="issue-location">core/detectors/ssrf.ts:20</span>
+      </div>
+      <p class="issue-description">Potential SSRF. Network request URL is dynamic. Ensure user input is validated against an allowlist.</p>
+      <div class="code-snippet">
+        <pre><code><span class="line-number">20</span>        regex: /\b(?:axios(?:\.(?:get|post|put|delete))?|fetch|http\.get|https\.get|request)\s*\(\s*[^&#039;&quot;`[{]/g,</code></pre>
+      </div>
+      
+    </div>
+  
+    <div class="issue-card" data-severity="critical">
+      <div class="issue-header">
+        <div class="issue-title-group">
+          <span class="severity-badge" style="background-color: #ef444415; color: #ef4444; border-color: #ef444440;">
+            CRITICAL
+          </span>
+          <h3 class="issue-title">Command Injection Risk: js-cmd-injection</h3>
+        </div>
+        <span class="issue-location">core/detectors/xss.ts:57</span>
+      </div>
+      <p class="issue-description">Potential Command Injection via Node.js exec/spawn. Ensure input is strictly sanitized or avoid shell execution.</p>
+      <div class="code-snippet">
+        <pre><code><span class="line-number">57</span>      while ((match = pattern.regex.exec(content)) !== null) {</code></pre>
+      </div>
+      
+    </div>
+  
+      </div>
+    </section>
+  </div>
+
+  <script>
+    function filterIssues(severity) {
+      // Update active button state
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.innerText.toLowerCase() === severity || (btn.innerText === 'All' && severity === 'all')) {
+          btn.classList.add('active');
+        }
+      });
+
+      // Filter cards
+      const cards = document.querySelectorAll('.issue-card');
+      cards.forEach(card => {
+        if (severity === 'all' || card.getAttribute('data-severity') === severity) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+  </script>
+</body>
+</html>

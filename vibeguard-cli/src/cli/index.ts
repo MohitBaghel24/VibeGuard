@@ -44,7 +44,7 @@ program
       if (options.badge === false) overrides.showBadge = false;
 
       const config = await loadConfig(overrides);
-      
+
       const result = await scan({ rootPath: scanPath, config });
 
       if (config.outputFormat === 'json') {
