@@ -39,10 +39,10 @@ jobs:
     - name: Run Linter
       run: npm run lint
       
-    # 6. Run Vitest test suite
-    - name: Run Tests
-      run: npm run test
-      
-    # 7. Ensure the project builds successfully
+    # 6. Ensure the project builds successfully
     - name: Build Project
       run: npm run build
+      
+    # 7. Run Vitest test suite (requires built files for integration tests)
+    - name: Run Tests
+      run: npm run test
