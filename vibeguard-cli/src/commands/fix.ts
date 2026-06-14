@@ -54,7 +54,7 @@ export function addFixCommands(program: Command) {
             } else {
               // Interactive prompt
               const userReplacement = await input({
-                message: `⚠️ [${issue.title}] found at line ${issue.line}. What environment variable should replace this?`,
+                message: `⚠️ [${issue.title}] found at line ${issue.line}. ${issue.detectorId === 'secrets' ? 'What environment variable should replace this?' : 'Enter replacement (default shown):'}`,
                 default: issue.replacement,
               });
               

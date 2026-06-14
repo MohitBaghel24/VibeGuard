@@ -63,6 +63,11 @@ export class XSSDetector implements Detector {
         if (lineEnd === -1) lineEnd = content.length;
         const lineContent = content.substring(lineStart, lineEnd);
         
+        let replacement: string | undefined;
+        if (pattern.id === 'js-xss-innerhtml') {
+          replacement = matchText.replace(/innerHTML/g, 'textContent');
+        }
+
         issues.push({
           id: `xss:${hash(`${filePath}:${lineNumber}:${match.index}`)}`,
           detectorId: this.id,
@@ -75,6 +80,8 @@ export class XSSDetector implements Detector {
           column: match.index - lineStart + 1,
           length: matchText.length,
           match: matchText,
+          rawMatch: matchText,
+          replacement,
           lineContent: lineContent,
           confidence: 0.8,
           cwe: 'CWE-79'
